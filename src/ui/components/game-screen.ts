@@ -12,6 +12,7 @@ import { AIPlayer, AIDifficulty } from '../../ai/ai-interface';
 import { AIEasy } from '../../ai/ai-easy';
 import { AIMedium } from '../../ai/ai-medium';
 import { AIHard } from '../../ai/ai-hard';
+import { themeManager, ThemeSelector } from '../themes';
 
 /**
  * Game modes
@@ -29,6 +30,7 @@ export class GameScreen {
   private renderer: BoardRenderer;
   private interaction: InteractionHandler;
   private container: HTMLElement;
+  private themeSelector: ThemeSelector;
   
   // Game mode and AI
   private gameMode: GameMode = GameMode.TWO_PLAYER;
@@ -50,13 +52,18 @@ export class GameScreen {
     this.container = container;
     this.game = new ChessGame();
     
-    // Initialize renderer
+    // Initialize renderer with theme manager
     const boardContainer = document.createElement('div');
     boardContainer.className = 'board-wrapper';
     this.renderer = new BoardRenderer(boardContainer);
+    this.renderer.setThemeManager(themeManager);
     
     // Initialize interaction
     this.interaction = new InteractionHandler(this.game, this.renderer);
+    
+    // Initialize theme selector
+    this.themeSelector = new ThemeSelector(themeManager);
+    this.themeSelector.setOnThemeChange(() => this.handleThemeChange());
   }
 
   /**
@@ -105,6 +112,10 @@ export class GameScreen {
     // Game mode section
     this.gameModeSection = this.createGameModeSection();
     panel.appendChild(this.gameModeSection);
+    
+    // Theme selector section
+    const themeSelectorElement = this.themeSelector.render();
+    panel.appendChild(themeSelectorElement);
     
     // Game info section
     const gameInfo = this.createGameInfo();
@@ -569,10 +580,27 @@ export class GameScreen {
   }
 
   /**
+   * Handle theme change
+   */
+  private handleThemeChange(): void {
+    // Re-render board with new theme
+    this.renderer.renderBoard(this.game.getBoard());
+    
+    // Restore highlights if any
+    const lastMove = this.game.getHistory().getLastMove();
+    if (lastMove) {
+      this.renderer.highlightLastMove(lastMove.move.from, lastMove.move.to);
+    }
+    
+    console.log('Theme changed:', themeManager.getCurrentTheme().name);
+  }
+
+  /**
    * Destroy and clean up
    */
   destroy(): void {
     this.renderer.destroy();
+    this.themeSelector.destroy();
     this.container.innerHTML = '';
   }
 }

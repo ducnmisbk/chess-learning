@@ -8,6 +8,7 @@ import type { Board, Position, Piece } from '../../core/types';
 import { PieceColor } from '../../core/types';
 import { BOARD_SIZE } from '../../utils/constants';
 import { FILES, RANKS } from '../../core/types';
+import type { ThemeManager } from '../themes/theme-manager';
 
 export interface BoardConfig {
   size: number;
@@ -23,6 +24,7 @@ export class BoardRenderer {
   private boardElement: HTMLElement | null = null;
   private config: BoardConfig;
   private squares: HTMLElement[][] = [];
+  private themeManager: ThemeManager | null = null;
 
   constructor(container: HTMLElement, config?: Partial<BoardConfig>) {
     this.container = container;
@@ -31,6 +33,13 @@ export class BoardRenderer {
       orientation: config?.orientation || PieceColor.WHITE,
       showCoordinates: config?.showCoordinates !== false
     };
+  }
+
+  /**
+   * Set theme manager for dynamic piece loading
+   */
+  setThemeManager(themeManager: ThemeManager): void {
+    this.themeManager = themeManager;
   }
 
   /**
@@ -168,10 +177,11 @@ export class BoardRenderer {
    * Get image path for a piece
    */
   private getPieceImagePath(piece: Piece): string {
-    // Using classic theme by default
-    const color = piece.color;
-    const type = piece.type;
-    return `/assets/pieces/classic/${color}-${type}.png`;
+    if (this.themeManager) {
+      return this.themeManager.getPieceImagePath(piece.color, piece.type);
+    }
+    // Fallback to classic theme if no theme manager
+    return `/assets/pieces/classic/${piece.color}-${piece.type}.png`;
   }
 
   /**

@@ -489,58 +489,58 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 
 ## Implementation Phases
 
-### Phase 0: Setup & Foundation (Week 1)
+### Phase 0: Setup & Foundation (Week 1) ✅ COMPLETED
 **Goal**: Project scaffolding and tooling
 
 #### Tasks:
-- [ ] Initialize project with Vite + TypeScript
-- [ ] Set up folder structure
-- [ ] **Reorganize assets** following [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)
-- [ ] Configure tsconfig.json (strict mode)
-- [ ] Create basic HTML shell with canvas/div for board
-- [ ] Set up CSS reset + global styles
-- [ ] Add ESLint + Prettier (optional, for consistency)
+- [x] Initialize project with Vite + TypeScript
+- [x] Set up folder structure
+- [x] **Reorganize assets** following [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)
+- [x] Configure tsconfig.json (strict mode)
+- [x] Create basic HTML shell with canvas/div for board
+- [x] Set up CSS reset + global styles
+- [x] Add ESLint + Prettier (optional, for consistency)
 
 #### Codex/Copilot Usage:
 - ✅ Generate: Vite config, tsconfig, package.json scripts
 - ⚠️ Manual: Review and adjust strict type settings
 
 #### Deliverable:
-- Empty project that builds and runs
-- Hot reload working
-- Basic styled page
+- ✅ Empty project that builds and runs
+- ✅ Hot reload working
+- ✅ Basic styled page
 
 ---
 
-### Phase 1: Core Game Engine (Week 1-2)
+### Phase 1: Core Game Engine (Week 1-2) ✅ COMPLETED
 **Goal**: Playable chess with legal move validation (no AI)
 
-#### Milestone 1.1: Board Representation
-- [ ] Define `Board` class with 8×8 array
-- [ ] Define `Piece` type and piece constants
-- [ ] Write `initializeBoard()` function (starting position)
-- [ ] Write coordinate utilities (e.g., `algebraic('e4')` → `[4, 4]`)
+#### Milestone 1.1: Board Representation ✅
+- [x] Define `Board` class with 8×8 array
+- [x] Define `Piece` type and piece constants
+- [x] Write `initializeBoard()` function (starting position)
+- [x] Write coordinate utilities (e.g., `algebraic('e4')` → `[4, 4]`)
 
-#### Milestone 1.2: Move Validation
-- [ ] Implement `getPossibleMoves(piece, position)` for each piece type:
+#### Milestone 1.2: Move Validation ✅
+- [x] Implement `getPossibleMoves(piece, position)` for each piece type:
   - Pawn (including en passant)
   - Knight
   - Bishop
   - Rook
   - Queen
   - King (including castling)
-- [ ] Filter moves that would leave king in check
-- [ ] Handle special rules: castling, en passant, promotion
+- [x] Filter moves that would leave king in check
+- [x] Handle special rules: castling, en passant, promotion
 
-#### Milestone 1.3: Game State Management
-- [ ] `GameState` class with:
+#### Milestone 1.3: Game State Management ✅
+- [x] `GameState` class with:
   - Current board
   - Active player (white/black)
   - Move history
   - Game status (playing, checkmate, stalemate, draw)
-- [ ] `isCheck()`, `isCheckmate()`, `isStalemate()` functions
-- [ ] `makeMove()` function with validation
-- [ ] `undo()` / `redo()` functions
+- [x] `isCheck()`, `isCheckmate()`, `isStalemate()` functions
+- [x] `makeMove()` function with validation
+- [x] `undo()` / `redo()` functions
 
 #### Codex/Copilot Usage:
 - ✅ Generate: Piece movement rules (well-defined logic)
@@ -549,43 +549,43 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 - ✅ Generate: Unit tests for each piece type
 
 #### Testing:
-- Test each piece in isolation
-- Test check detection
-- Test checkmate scenarios (fool's mate, scholar's mate)
-- Test stalemate
+- ✅ Test each piece in isolation
+- ✅ Test check detection
+- ✅ Test checkmate scenarios (fool's mate, scholar's mate)
+- ✅ Test stalemate
 
 #### Deliverable:
-- Console-based chess game that validates moves correctly
-- No UI yet (just pure logic)
+- ✅ Console-based chess game that validates moves correctly
+- ✅ No UI yet (just pure logic)
 
 ---
 
-### Phase 2: Basic UI & 2-Player Mode (Week 2-3)
+### Phase 2: Basic UI & 2-Player Mode (Week 2-3) ✅ COMPLETED
 **Goal**: Visual board that two people can play on
 
-#### Milestone 2.1: Board Rendering
-- [ ] Create `BoardRenderer` class
-- [ ] Draw 8×8 grid with alternating colors
-- [ ] Load SVG piece images from `assets/pieces/classic/`
-- [ ] Render pieces on board
-- [ ] Handle different board orientations (white/black bottom)
-- [ ] Implement asset loading strategy (see [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md))
+#### Milestone 2.1: Board Rendering ✅
+- [x] Create `BoardRenderer` class
+- [x] Draw 8×8 grid with alternating colors
+- [x] Load SVG piece images from `assets/pieces/classic/`
+- [x] Render pieces on board
+- [x] Handle different board orientations (white/black bottom)
+- [x] Implement asset loading strategy (see [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md))
 
-#### Milestone 2.2: User Interaction
-- [ ] Click to select piece (highlight legal moves)
-- [ ] Click destination to move
-- [ ] Drag-and-drop support (optional but nice)
-- [ ] Visual feedback:
+#### Milestone 2.2: User Interaction ✅
+- [x] Click to select piece (highlight legal moves)
+- [x] Click destination to move
+- [x] Drag-and-drop support (optional but nice)
+- [x] Visual feedback:
   - Last move highlighting
   - Check highlighting
   - Legal move dots/squares
 
-#### Milestone 2.3: Game Flow UI
-- [ ] Turn indicator (White's turn / Black's turn)
-- [ ] Move history panel (simple list)
-- [ ] Undo/Redo buttons
-- [ ] New Game button
-- [ ] Game over modal (checkmate, stalemate)
+#### Milestone 2.3: Game Flow UI ✅
+- [x] Turn indicator (White's turn / Black's turn)
+- [x] Move history panel (simple list)
+- [x] Undo/Redo buttons
+- [x] New Game button
+- [x] Game over modal (checkmate, stalemate)
 
 #### Codex/Copilot Usage:
 - ✅ Generate: SVG rendering code
@@ -594,102 +594,105 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 - ✅ Generate: Animation timing functions
 
 #### Deliverable:
-- Fully playable 2-player local chess game
-- Clean, functional UI (no themes yet)
+- ✅ Fully playable 2-player local chess game
+- ✅ Clean, functional UI (no themes yet)
 
 ---
 
-### Phase 3: AI Opponent (Week 3-4)
+### Phase 3: AI Opponent (Week 3-4) ✅ COMPLETED
 **Goal**: Play against computer with 3 difficulty levels
 
-#### Milestone 3.1: Easy AI (Random)
-- [ ] Implement `AIEasy` class
-- [ ] Get all legal moves
-- [ ] Filter moves that immediately lose queen/rook (basic blunder check)
-- [ ] Pick random move from remaining
-- [ ] Add 500ms delay before AI moves (feels less robotic)
+#### Milestone 3.1: Easy AI (Random) ✅
+- [x] Implement `AIEasy` class
+- [x] Get all legal moves
+- [x] Filter moves that immediately lose queen/rook (basic blunder check)
+- [x] Pick random move from remaining
+- [x] Add 500ms delay before AI moves (feels less robotic)
 
-#### Milestone 3.2: Medium AI (Minimax Basic)
-- [ ] Implement `AIMedium` class
-- [ ] Write `evaluatePosition()` function:
+#### Milestone 3.2: Medium AI (Minimax Basic) ✅
+- [x] Implement `AIMedium` class
+- [x] Write `evaluatePosition()` function:
   - Material count (piece values)
   - Add bonus for center control (+10 per piece in center 4 squares)
-- [ ] Implement minimax algorithm (depth 2-3)
-- [ ] Add move ordering (captures first for better pruning)
+- [x] Implement minimax algorithm (depth 2-3)
+- [x] Add move ordering (captures first for better pruning)
 
-#### Milestone 3.3: Hard AI (Minimax Advanced)
-- [ ] Implement `AIHard` class
-- [ ] Enhanced evaluation:
+#### Milestone 3.3: Hard AI (Minimax Advanced) ✅
+- [x] Implement `AIHard` class
+- [x] Enhanced evaluation:
   - Material + center control
   - Piece-square tables (positional bonuses)
   - King safety (penalty for exposed king in midgame)
   - Pawn structure basics
-- [ ] Increase depth to 3-4
-- [ ] Add alpha-beta pruning for performance
+- [x] Increase depth to 3-4
+- [x] Add alpha-beta pruning for performance
 
-#### Milestone 3.4: AI Integration
-- [ ] Mode selection screen (2-player vs AI)
-- [ ] Difficulty selector (Easy/Medium/Hard)
-- [ ] UI indication when AI is "thinking"
+#### Milestone 3.4: AI Integration ✅
+- [x] Mode selection screen (2-player vs AI)
+- [x] Difficulty selector (Easy/Medium/Hard)
+- [x] UI indication when AI is "thinking"
 
 #### Codex/Copilot Usage:
 - ✅ Generate: Minimax skeleton
 - ✅ Generate: Evaluation function components
 - ⚠️ Manual: Tune weights and depth for appropriate difficulty
 - ✅ Generate: Alpha-beta pruning optimization
-- ❌ Manual: Playtest to ensure Easy is winnable for kids
+- ⚠️ Manual: Playtest to ensure Easy is winnable for kids
 
 #### Testing:
-- Test AI doesn't make illegal moves
-- Test Easy loses to simple tactics
-- Test Medium provides challenge
-- Benchmark performance (moves should calculate <2 seconds)
+- ✅ Test AI doesn't make illegal moves
+- ⚠️ Test Easy loses to simple tactics (needs playtesting)
+- ⚠️ Test Medium provides challenge (needs playtesting)
+- ✅ Benchmark performance (moves should calculate <2 seconds)
 
 #### Deliverable:
-- Working AI opponents at 3 levels
-- Smooth gameplay experience
+- ✅ Working AI opponents at 3 levels
+- ✅ Smooth gameplay experience
 
 ---
 
-### Phase 4: Theme System (Week 4)
+### Phase 4: Theme System (Week 4) ✅ COMPLETED
 **Goal**: Multiple visual styles
 
-#### Milestone 4.1: Theme Architecture
-- [ ] Create `ThemeManager` class
-- [ ] Define `Theme` interface
-- [ ] Implement theme switching without page reload
+#### Milestone 4.1: Theme Architecture ✅
+- [x] Create `ThemeManager` class
+- [x] Define `Theme` interface
+- [x] Implement theme switching without page reload
 
-#### Milestone 4.2: Theme Implementation
-- [ ] **Classic Theme**:
+#### Milestone 4.2: Theme Implementation ✅
+- [x] **Classic Theme**:
   - Load from `assets/pieces/classic/` and `assets/boards/classic/`
   - Traditional piece SVGs (Staunton style)
   - Warm browns and tans
-- [ ] **Minimalist Theme**:
+- [x] **Minimalist Theme**:
   - Load from `assets/pieces/minimalist/` and `assets/boards/minimalist/`
-  - Flat colors (pastel blue/pink or gray/white)
+  - Flat colors with 8 color options (black, white, blue, red, green, orange, purple, yellow)
   - Simple geometric pieces
   - Clean sans-serif fonts
-- [ ] **Fun Theme**:
+  - **6 preset combinations** for easy customization
+- [x] **Fun Theme**:
   - Load from `assets/pieces/fun/` and `assets/boards/fun/`
   - Bright primary colors
   - Cartoon piece designs
   - Rounded corners everywhere
-- [ ] Use `assets/themes.json` for theme configuration (see [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md))
+- [x] Use `assets/themes.json` for theme configuration (see [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md))
 
-#### Milestone 4.3: Theme Selector UI
-- [ ] Settings screen with theme preview cards
-- [ ] Save theme preference to LocalStorage
-- [ ] Apply theme on app startup
+#### Milestone 4.3: Theme Selector UI ✅
+- [x] Settings screen with theme preview cards
+- [x] Save theme preference to LocalStorage
+- [x] Apply theme on app startup
+- [x] Color customization for Minimalist theme
 
 #### Codex/Copilot Usage:
 - ✅ Generate: CSS variables for theming
 - ✅ Generate: Theme switching logic
-- ⚠️ Manual: Design color palettes (requires visual design sense)
+- ✅ Manual: Design color palettes (8-color system implemented)
 - ✅ Generate: Smooth transition animations
 
 #### Deliverable:
-- 2-3 polished themes
-- Persistent theme selection
+- ✅ 3 polished themes (Classic, Minimalist, Fun)
+- ✅ Persistent theme selection
+- ✅ **BONUS**: 8-color customization system for Minimalist theme with 6 presets
 
 ---
 
