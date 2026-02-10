@@ -120,6 +120,30 @@
   transform: scale(1.1);
 }
 
+/* Fun theme: oversized, playful pieces with slight overflow */
+:root[data-theme="fun"] .board-container {
+  overflow: visible;
+}
+
+:root[data-theme="fun"] .square {
+  overflow: visible;
+}
+
+:root[data-theme="fun"] .piece {
+  width: 120%;
+  height: 120%;
+  transform: translateY(-4%);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.25));
+}
+
+:root[data-theme="fun"] .square:hover .piece {
+  transform: translateY(-4%) scale(1.05);
+}
+
+:root[data-theme="fun"] .square.selected .piece {
+  transform: translateY(-4%) scale(1.08);
+}
+
 /* Dragging state */
 .piece.dragging {
   opacity: 0.5;

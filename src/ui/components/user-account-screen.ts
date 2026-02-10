@@ -47,13 +47,19 @@ export class UserAccountScreen {
   private renderWelcomeBack(wrapper: HTMLElement, user: User): void {
     wrapper.innerHTML = `
       <div class="welcome-back card">
-        <h1>Welcome Back! 👋</h1>
+        <div class="account-hero">
+          <div class="hero-badge">Ready to play</div>
+          <h1>Welcome Back! 👋</h1>
+          <p class="subtitle">Your board is waiting.</p>
+        </div>
         <div class="user-profile">
           <div class="user-avatar-large">${user.avatar}</div>
           <h2>${user.username}</h2>
         </div>
-        <button class="button-primary continue-button">Continue as ${user.username}</button>
-        <button class="button-secondary switch-user-button">Switch User</button>
+        <div class="welcome-actions">
+          <button class="button-primary continue-button">Continue as ${user.username}</button>
+          <button class="button-secondary switch-user-button">Switch Player</button>
+        </div>
       </div>
     `;
 
@@ -80,46 +86,55 @@ export class UserAccountScreen {
 
     wrapper.innerHTML = `
       <div class="login-screen card">
-        <h1>♟️ Chess Learning</h1>
-        <p class="subtitle">Offline Chess Game for Kids</p>
+        <div class="account-hero">
+          <div class="hero-badge">Offline • Kid-Friendly</div>
+          <h1>♟️ Chess Learning</h1>
+          <p class="subtitle">Pick a buddy and start your chess adventure!</p>
+        </div>
 
         ${users.length > 0 ? `
           <div class="existing-users">
-            <h2>Select Your Profile</h2>
+            <h2>Choose Your Player</h2>
+            <p class="helper-text">Tap your avatar to jump back in.</p>
             <div class="user-list"></div>
             <div class="divider">or</div>
           </div>
         ` : ''}
 
         <div class="create-account">
-          <h2>Create New ${users.length > 0 ? 'Profile' : 'Account'}</h2>
+          <h2>Create a New Player</h2>
           
           <div class="form-group">
-            <label>Choose Your Avatar</label>
+            <label>Step 1: Choose your avatar</label>
+            <p class="helper-text">This is your chess buddy.</p>
             <div class="avatar-selector"></div>
             <input type="hidden" id="selected-avatar" value="${AVATARS[0]}">
           </div>
 
           <div class="form-group">
-            <label>Username (2-20 characters)</label>
+            <label>Step 2: Pick a name</label>
+            <p class="helper-text">2-20 characters, no passwords needed.</p>
             <input 
               type="text" 
               id="username-input" 
-              placeholder="Enter your name"
+              placeholder="Your nickname"
               maxlength="20"
               autocomplete="off"
             >
             <div class="error-message"></div>
           </div>
 
-          <button class="button-primary create-account-button">
-            ${users.length > 0 ? 'Create Profile' : 'Start Playing'}
-          </button>
+          <div class="form-group">
+            <label>Step 3: Start playing</label>
+            <button class="button-primary create-account-button">
+              ${users.length > 0 ? 'Create Player' : 'Start Playing'}
+            </button>
+          </div>
         </div>
 
         ${users.length === 0 ? `
           <div class="guest-mode">
-            <p>Just want to try it out?</p>
+            <p class="helper-text">Just want a quick look?</p>
             <button class="button-secondary guest-button">Play as Guest</button>
           </div>
         ` : ''}

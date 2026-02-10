@@ -21,3 +21,29 @@ export {
   ProgressTracker 
 } from './progress-tracker';
 export type { UserProgress } from './progress-tracker';
+
+// Skill tracking and analysis
+export { SkillEngine } from './skill-engine';
+export type { 
+  SkillProfile,
+  SkillLevel,
+  TacticalSkills,
+  PhaseScores,
+  RatingHistoryEntry,
+  RatingChange,
+  AIDifficulty
+} from './skill-engine';
+
+export { TacticalAnalyzer } from './tactical-analyzer';
+export type {
+  DetectedTactic,
+  TacticType,
+  MoveQuality
+} from './tactical-analyzer';
+
+export { GameAnalyzer } from './game-analyzer';
+export type {
+  GameAnalysis,
+  EnrichedGameRecord,
+  MoveAnalysis
+} from './game-analyzer';

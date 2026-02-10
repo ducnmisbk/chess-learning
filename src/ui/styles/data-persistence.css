@@ -14,19 +14,54 @@
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+  background:
+    radial-gradient(circle at 10% 10%, #fff4d6 0%, transparent 40%),
+    radial-gradient(circle at 90% 15%, #d9f7ff 0%, transparent 35%),
+    radial-gradient(circle at 20% 80%, #ffe3e3 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, #e7ffd9 0%, transparent 40%),
+    linear-gradient(135deg, #fff8f0, #f3fbff);
+  position: relative;
+  overflow: hidden;
+}
+
+.account-screen::before,
+.account-screen::after {
+  content: '';
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  opacity: 0.25;
+  filter: blur(2px);
+  animation: floaty 8s ease-in-out infinite;
+}
+
+.account-screen::before {
+  background: #ffd6a5;
+  top: -40px;
+  left: -60px;
+}
+
+.account-screen::after {
+  background: #caffbf;
+  bottom: -50px;
+  right: -60px;
+  animation-delay: 2s;
 }
 
 .welcome-back,
 .login-screen {
-  max-width: 600px;
+  max-width: 680px;
   width: 100%;
   text-align: center;
+  position: relative;
+  z-index: 1;
+  animation: popIn 350ms ease;
 }
 
 .welcome-back h1,
 .login-screen h1 {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   margin-bottom: 1rem;
   color: var(--text-primary);
 }
@@ -34,6 +69,23 @@
 .subtitle {
   color: var(--text-secondary);
   margin-bottom: 2rem;
+  font-size: 1.2rem;
+}
+
+.account-hero {
+  margin-bottom: 1.5rem;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  margin-bottom: 0.75rem;
+  background: #fff0c7;
+  border: 2px solid #ffd28a;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #7a4b00;
 }
 
 /* User Profile */
@@ -42,7 +94,7 @@
 }
 
 .user-avatar-large {
-  font-size: 5rem;
+  font-size: 5.5rem;
   margin-bottom: 1rem;
 }
 
@@ -56,29 +108,38 @@
   margin-bottom: 2rem;
 }
 
+.helper-text {
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
 .user-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.25rem;
   margin: 1rem 0;
 }
 
 .user-card {
-  padding: 1rem;
-  background: var(--bg-secondary);
-  border-radius: 12px;
+  padding: 1.25rem;
+  background: #ffffff;
+  border-radius: 16px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   text-align: center;
+  border: 2px solid #f0f0f0;
 }
 
 .user-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-6px) rotate(-1deg);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-color: #ffd28a;
 }
 
 .user-avatar {
-  font-size: 3rem;
+  font-size: 3.4rem;
   margin-bottom: 0.5rem;
 }
 
@@ -132,15 +193,16 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--text-primary);
+  font-size: 1.05rem;
 }
 
 .form-group input[type="text"] {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--bg-secondary);
+  padding: 0.85rem 1rem;
+  font-size: 1.1rem;
+  border: 3px solid #e7e7e7;
+  border-radius: 14px;
+  background: #ffffff;
   color: var(--text-primary);
   transition: border-color 0.2s;
 }
@@ -153,28 +215,29 @@
 /* Avatar Selector */
 .avatar-selector {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 0.75rem;
 }
 
 .avatar-option {
-  font-size: 2rem;
-  padding: 0.5rem;
-  background: var(--bg-secondary);
-  border: 2px solid transparent;
-  border-radius: 8px;
+  font-size: 2.2rem;
+  padding: 0.65rem;
+  background: #ffffff;
+  border: 3px solid transparent;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .avatar-option:hover {
-  transform: scale(1.1);
+  transform: scale(1.08) rotate(-2deg);
   border-color: var(--primary-color);
 }
 
 .avatar-option.selected {
-  border-color: var(--primary-color);
-  background: var(--primary-color-light);
+  border-color: #ffb703;
+  background: #fff4d6;
+  box-shadow: 0 4px 12px rgba(255, 183, 3, 0.3);
 }
 
 /* Error Message */
@@ -195,6 +258,58 @@
 .guest-mode {
   margin-top: 2rem;
   text-align: center;
+}
+
+.welcome-actions,
+.guest-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.account-screen .button-primary,
+.account-screen .button-secondary {
+  min-width: 220px;
+  font-size: 1.05rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 14px;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floaty {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 600px) {
+  .welcome-back h1,
+  .login-screen h1 {
+    font-size: 2.2rem;
+  }
+
+  .user-list {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .account-screen .button-primary,
+  .account-screen .button-secondary {
+    width: 100%;
+  }
 }
 
 /* ========================================

@@ -35,6 +35,21 @@ interface ChessDB extends DBSchema {
       startedAt: number;
       completedAt: number;
       duration: number; // seconds
+      // Enriched analysis (Phase 5.6)
+      analysis?: {
+        blunders: number;
+        mistakes: number;
+        brilliantMoves: number;
+        avgThinkTime: number;
+        openingName?: string;
+        ratingChange: number;
+        tacticsUsed: string[];
+        phaseQuality: {
+          opening: number;
+          middlegame: number;
+          endgame: number;
+        };
+      };
     };
     indexes: { 'by-user': string; 'by-date': number };
   };
@@ -63,10 +78,39 @@ interface ChessDB extends DBSchema {
       badgesEarned: string[];
     };
   };
+  skills: {
+    key: string; // userId
+    value: {
+      userId: string;
+      rating: number;
+      level: 'beginner' | 'developing' | 'intermediate' | 'advanced';
+      tacticalSkills: {
+        forks: number;
+        pins: number;
+        skewers: number;
+        discoveredAttacks: number;
+      };
+      phaseScores: {
+        opening: number;
+        middlegame: number;
+        endgame: number;
+      };
+      mistakePatterns: string[];
+      adaptiveDifficulty: number;
+      gamesPlayed: number;
+      lastUpdated: number;
+      ratingHistory: Array<{
+        timestamp: number;
+        rating: number;
+        change: number;
+        opponent: string;
+      }>;
+    };
+  };
 }
 
 const DB_NAME = 'chess-learning-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;  // Incremented for skills store
 
 /**
  * Storage Manager Class
@@ -117,6 +161,11 @@ export class StorageManager {
           if (!db.objectStoreNames.contains('progress')) {
             db.createObjectStore('progress', { keyPath: 'userId' });
           }
+
+          // Skills store (Phase 5.5)
+          if (!db.objectStoreNames.contains('skills')) {
+            db.createObjectStore('skills', { keyPath: 'userId' });
+          }
         },
       });
 
@@ -135,10 +184,10 @@ export class StorageManager {
     data: ChessDB[K]['value']
   ): Promise<void> {
     if (this.db) {
-      await this.db.put(storeName as 'users' | 'games' | 'progress', data);
+      await this.db.put(storeName as 'users' | 'games' | 'progress' | 'skills', data);
     } else {
       // LocalStorage fallback
-      this.saveToLocalStorage(storeName as 'users' | 'games' | 'progress', data);
+      this.saveToLocalStorage(storeName as 'users' | 'games' | 'progress' | 'skills', data);
     }
   }
 
@@ -150,10 +199,10 @@ export class StorageManager {
     key: string
   ): Promise<ChessDB[K]['value'] | undefined> {
     if (this.db) {
-      return await this.db.get(storeName as 'users' | 'games' | 'progress', key);
+      return await this.db.get(storeName as 'users' | 'games' | 'progress' | 'skills', key);
     } else {
       // LocalStorage fallback
-      return this.getFromLocalStorage(storeName as 'users' | 'games' | 'progress', key);
+      return this.getFromLocalStorage(storeName as 'users' | 'games' | 'progress' | 'skills', key);
     }
   }
 
@@ -164,10 +213,10 @@ export class StorageManager {
     storeName: K
   ): Promise<ChessDB[K]['value'][]> {
     if (this.db) {
-      return await this.db.getAll(storeName as 'users' | 'games' | 'progress');
+      return await this.db.getAll(storeName as 'users' | 'games' | 'progress' | 'skills');
     } else {
       // LocalStorage fallback
-      return this.getAllFromLocalStorage(storeName as 'users' | 'games' | 'progress');
+      return this.getAllFromLocalStorage(storeName as 'users' | 'games' | 'progress' | 'skills');
     }
   }
 
@@ -195,9 +244,9 @@ export class StorageManager {
     key: string
   ): Promise<void> {
     if (this.db) {
-      await this.db.delete(storeName as 'users' | 'games' | 'progress', key);
+      await this.db.delete(storeName as 'users' | 'games' | 'progress' | 'skills', key);
     } else {
-      this.deleteFromLocalStorage(storeName as 'users' | 'games' | 'progress', key);
+      this.deleteFromLocalStorage(storeName as 'users' | 'games' | 'progress' | 'skills', key);
     }
   }
 
@@ -206,9 +255,9 @@ export class StorageManager {
    */
   async clear<K extends keyof ChessDB>(storeName: K): Promise<void> {
     if (this.db) {
-      await this.db.clear(storeName as 'users' | 'games' | 'progress');
+      await this.db.clear(storeName as 'users' | 'games' | 'progress' | 'skills');
     } else {
-      this.clearLocalStorage(storeName as 'users' | 'games' | 'progress');
+      this.clearLocalStorage(storeName as 'users' | 'games' | 'progress' | 'skills');
     }
   }
 

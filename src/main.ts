@@ -10,12 +10,14 @@ import './ui/styles/theme-selector.css';
 import './ui/styles/data-persistence.css'; // Phase 5
 
 import { GameScreen } from './ui/components/game-screen';
+import { UserAccountScreen } from './ui/components/user-account-screen';
 import { runPhase1Tests } from './tests/phase1-tests';
 import { themeManager } from './ui/themes';
-import { storageManager, userManager } from './data'; // Phase 5
+import { storageManager, userManager, User } from './data'; // Phase 5
 
 // Module-level variable for GameScreen instance
 let gameScreen: GameScreen | null = null;
+let accountScreen: UserAccountScreen | null = null;
 
 // Main initialization function
 async function initializeApp() {
@@ -45,25 +47,62 @@ async function initializeApp() {
   if (currentUser) {
     console.log(`✅ Logged in as: ${currentUser.username}`);
   } else {
-    console.log('⚠️ No user logged in (guest mode)');
+    console.log('⚠️ No user logged in');
   }
 
   // Run Phase 1 tests (in background)
   console.log('\n🧪 Running Phase 1 Tests...');
   runPhase1Tests();
 
-  // Initialize Phase 2: UI (with Phase 3: AI)
-  console.log('\n🎨 Initializing Chess Game UI...');
-  console.log('─────────────────────────────────────────────');
-
   const appContainer = document.getElementById('app');
   if (!appContainer) {
     throw new Error('App container not found!');
   }
 
-  gameScreen = new GameScreen(appContainer);
+  // Check if user is logged in
+  if (!currentUser) {
+    // Show account creation/login screen
+    console.log('\n👤 Showing User Account Screen...');
+    showAccountScreen(appContainer);
+  } else {
+    // Go directly to game
+    console.log('\n🎨 Initializing Chess Game UI...');
+    showGameScreen(appContainer, currentUser);
+  }
+}
+
+/**
+ * Show account creation/login screen
+ */
+function showAccountScreen(container: HTMLElement): void {
+  container.innerHTML = '';
+  
+  accountScreen = new UserAccountScreen(container);
+  accountScreen.setOnLogin((user: User) => {
+    console.log(`✅ User logged in: ${user.username}`);
+    showGameScreen(container, user);
+  });
+  accountScreen.render();
+}
+
+/**
+ * Show game screen
+ */
+function showGameScreen(container: HTMLElement, user: User): void {
+  container.innerHTML = '';
+  
+  gameScreen = new GameScreen(container);
+  gameScreen.setCurrentUser(user);
+  
+  // Set callback to return to account screen
+  gameScreen.setOnLogout(() => {
+    console.log('✅ User logged out');
+    showAccountScreen(container);
+  });
+  
   gameScreen.initialize();
 
+  console.log('─────────────────────────────────────────────');
   console.log('✅ Game UI Initialized');
   console.log('✅ Phase 2: Visual Board ✓');
   console.log('✅ Phase 3: AI Opponent ✓');

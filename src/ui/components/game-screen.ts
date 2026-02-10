@@ -13,7 +13,7 @@ import { AIEasy } from '../../ai/ai-easy';
 import { AIMedium } from '../../ai/ai-medium';
 import { AIHard } from '../../ai/ai-hard';
 import { themeManager, ThemeSelector } from '../themes';
-import { userManager, gameHistoryManager, progressTracker } from '../../data';
+import { userManager, gameHistoryManager, progressTracker, User } from '../../data';
 
 /**
  * Game modes
@@ -42,6 +42,8 @@ export class GameScreen {
   // Game tracking (Phase 5)
   private gameStartTime: number = Date.now();
   private currentDifficulty: AIDifficulty = AIDifficulty.EASY;
+  private currentUser: User | null = null;
+  private onLogoutCallback?: () => void;
   
   // UI Elements
   private gameModeSection!: HTMLElement;
@@ -70,6 +72,20 @@ export class GameScreen {
     // Initialize theme selector
     this.themeSelector = new ThemeSelector(themeManager);
     this.themeSelector.setOnThemeChange(() => this.handleThemeChange());
+  }
+
+  /**
+   * Set current user
+   */
+  setCurrentUser(user: User): void {
+    this.currentUser = user;
+  }
+
+  /**
+   * Set callback for logout
+   */
+  setOnLogout(callback: () => void): void {
+    this.onLogoutCallback = callback;
   }
 
   /**
@@ -164,6 +180,47 @@ export class GameScreen {
     menuHeader.appendChild(closeButton);
     menu.appendChild(menuHeader);
     
+    // User Profile Section
+    if (this.currentUser) {
+      const profileSection = document.createElement('div');
+      profileSection.className = 'menu-section';
+      
+      const profileTitle = document.createElement('h3');
+      profileTitle.textContent = '👤 My Profile';
+      profileTitle.className = 'menu-section-title';
+      profileSection.appendChild(profileTitle);
+      
+      const profileInfo = document.createElement('div');
+      profileInfo.className = 'menu-profile-info';
+      profileInfo.innerHTML = `
+        <div class="menu-user-avatar">${this.currentUser.avatar}</div>
+        <div class="menu-user-name">${this.currentUser.username}</div>
+      `;
+      profileSection.appendChild(profileInfo);
+      
+      const accountActionsDiv = document.createElement('div');
+      accountActionsDiv.className = 'menu-account-actions';
+      
+      const switchAccountBtn = document.createElement('button');
+      switchAccountBtn.className = 'button-secondary button-small';
+      switchAccountBtn.textContent = '🔄 Switch Account';
+      switchAccountBtn.onclick = () => this.handleSwitchAccount();
+      accountActionsDiv.appendChild(switchAccountBtn);
+      
+      const logoutBtn = document.createElement('button');
+      logoutBtn.className = 'button-secondary button-small';
+      logoutBtn.textContent = '🚪 Logout';
+      logoutBtn.onclick = () => this.handleLogout();
+      accountActionsDiv.appendChild(logoutBtn);
+      
+      profileSection.appendChild(accountActionsDiv);
+      menu.appendChild(profileSection);
+      
+      const divider = document.createElement('hr');
+      divider.className = 'menu-divider';
+      menu.appendChild(divider);
+    }
+    
     // Theme selector in menu
     const themeSectionTitle = document.createElement('h3');
     themeSectionTitle.textContent = '🎨 Themes';
@@ -194,6 +251,28 @@ export class GameScreen {
       this.menuOverlay.style.display = 'flex';
     } else {
       this.menuOverlay.style.display = 'none';
+    }
+  }
+
+  /**
+   * Handle switch account
+   */
+  private handleSwitchAccount(): void {
+    userManager.logout();
+    this.toggleMenu();
+    if (this.onLogoutCallback) {
+      this.onLogoutCallback();
+    }
+  }
+
+  /**
+   * Handle logout
+   */
+  private handleLogout(): void {
+    userManager.logout();
+    this.toggleMenu();
+    if (this.onLogoutCallback) {
+      this.onLogoutCallback();
     }
   }
 
