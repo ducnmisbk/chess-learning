@@ -196,26 +196,87 @@ interface Theme {
 ---
 
 ### 5. **Data Layer** (`/data`)
-**Responsibility**: Persistence, state sync, user accounts
+**Responsibility**: Persistence, state sync, user accounts, skill tracking
 
 - `storage-manager.ts` - Abstraction over IndexedDB/LocalStorage
-- `user-manager.ts` - User profiles (username, avatar)
-- `game-history.ts` - Save/load completed games
-- `progress-tracker.ts` - Track tutorial completion
-- `badge-system.ts` - Achievement logic
+- `user-manager.ts` - User profiles (username, avatar, skill profile)
+- `game-history.ts` - Save/load enriched game records
+- `progress-tracker.ts` - Track tutorial completion + learning path
+- `badge-system.ts` - Achievement & reward logic
+- `skill-engine.ts` - Rating calculation, tactical analysis, adaptive difficulty
+- `learning-path.ts` - Personalized lesson recommendations
+
+**Account Tiers**:
+```
+┌──────────────────────────────────────────────────┐
+│ Guest          → Play immediately, no data saved │
+│ Local Profile  → Full features, data on device   │
+│ Family Account → Multiple profiles (post-MVP)    │
+└──────────────────────────────────────────────────┘
+```
+
+**Skill Profile**:
+```typescript
+interface SkillProfile {
+  rating: number;              // 400-1600 (kid-friendly Elo)
+  level: SkillLevel;           // 'beginner' | 'developing' | 'intermediate' | 'advanced'
+  tacticalSkills: {
+    forks: number;             // 0-100 recognition score
+    pins: number;
+    skewers: number;
+    discoveredAttacks: number;
+  };
+  phaseScores: {
+    opening: number;           // 0-100
+    middlegame: number;
+    endgame: number;
+  };
+  mistakePatterns: string[];   // e.g. ['hangs_pieces', 'ignores_checks']
+  adaptiveDifficulty: number;  // Auto-adjusted AI level (0.0 - 1.0)
+}
+```
+
+**Enriched Game Record**:
+```typescript
+interface EnrichedGameRecord {
+  id: string;
+  userId: string;
+  mode: 'pvp' | 'ai';
+  difficulty?: 'easy' | 'medium' | 'hard';
+  playerColor: 'white' | 'black';
+  result: 'win' | 'loss' | 'draw';
+  moves: string[];             // Algebraic notation
+  timestamp: number;
+  duration: number;            // Seconds
+  
+  // Enriched analysis data
+  analysis: {
+    blunders: number;
+    mistakes: number;
+    brilliantMoves: number;
+    avgThinkTime: number;      // Seconds per move
+    openingName?: string;      // Detected opening
+    ratingChange: number;      // +/- points
+    tacticsUsed: string[];     // ['fork', 'pin', ...]
+  };
+}
+```
 
 **Storage Schema**:
 ```
 IndexedDB: chess_game_db
-  ├─ users { id, username, avatar, createdAt }
-  ├─ games { id, userId, mode, moves, result, timestamp }
-  ├─ progress { userId, lessonsCompleted, currentLesson }
-  └─ badges { userId, badgeId, earnedAt }
+  ├─ users { id, username, avatar, createdAt, skillProfile, settings }
+  ├─ games { id, userId, mode, moves, result, timestamp, analysis }
+  ├─ progress { userId, lessonsCompleted, currentLesson, learningPath }
+  ├─ badges { userId, badgeId, earnedAt }
+  ├─ skills { userId, rating, tacticalSkills, phaseScores, history[] }
+  └─ challenges { userId, dailyChallenge, weeklyGoals, streak }
 
 LocalStorage: (for quick config)
   ├─ current_user_id
   ├─ theme_preference
-  └─ sound_enabled
+  ├─ sound_enabled
+  └─ adaptive_difficulty
 ```
 
 ---
@@ -696,55 +757,112 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 
 ---
 
-### Phase 5: Data Persistence (Week 5)
-**Goal**: User accounts, save games, track progress
+### Phase 5: Data Persistence & Account System (Week 5-6)
+**Goal**: User accounts with skill tracking, enriched game history, adaptive difficulty
 
-#### Milestone 5.1: Storage Layer
-- [ ] Implement `StorageManager` class (IndexedDB wrapper)
-- [ ] Create database schema (users, games, progress, badges)
-- [ ] Write CRUD operations for each table
-- [ ] Add error handling and fallback to LocalStorage
+#### Milestone 5.1: Storage Layer ✅
+- [x] Implement `StorageManager` class (IndexedDB wrapper)
+- [x] Create database schema (users, games, progress, badges)
+- [x] Write CRUD operations for each table
+- [x] Add error handling and fallback to LocalStorage
 
-#### Milestone 5.2: User Management
-- [ ] Simple account creation screen:
+#### Milestone 5.2: User Management ✅
+- [x] Simple account creation screen:
   - Username input (max 20 chars)
-  - Avatar selector (8-12 preset avatars)
+  - Avatar selector (12 preset emoji avatars)
   - No password needed (local only)
-- [ ] User login/logout
-- [ ] "Guest" mode for trying without account
+- [x] User login/logout
+- [x] "Guest" mode for trying without account
 
-#### Milestone 5.3: Game History
-- [ ] Save completed games:
+#### Milestone 5.3: Game History ✅
+- [x] Save completed games:
   - Date/time
   - Mode (2P, vs AI)
   - Difficulty (if AI)
   - Result (win/loss/draw)
   - Move list
-- [ ] Game history viewer
+- [x] Game history viewer
 - [ ] Replay saved games (step through moves)
 
-#### Milestone 5.4: Progress Tracking
-- [ ] Track daily play streak
-- [ ] Track total games played
-- [ ] Track win rate by difficulty
+#### Milestone 5.4: Progress Tracking ✅
+- [x] Track daily play streak
+- [x] Track total games played
+- [x] Track win rate by difficulty
+
+#### Milestone 5.5: Skill Engine 🆕
+- [ ] Implement `SkillEngine` class:
+  - Kid-friendly rating system (400-1600, starts at 600)
+  - Rating update after each game (simplified Elo)
+  - Skill level mapping: Beginner (400-700) → Developing (700-1000) → Intermediate (1000-1300) → Advanced (1300-1600)
+- [ ] Tactical skill tracking:
+  - Detect forks, pins, skewers in games played
+  - Score each tactical skill 0-100
+  - Track improvement over time
+- [ ] Game phase scoring:
+  - Opening quality (development, center control, castling)
+  - Middlegame quality (tactics, piece activity)
+  - Endgame quality (king activation, pawn promotion)
+- [ ] Mistake pattern detection:
+  - Track recurring errors (hanging pieces, ignoring checks, poor trades)
+  - Feed into learning path recommendations
+- [ ] Rating history chart (visual progress over time)
+
+#### Milestone 5.6: Enriched Game Records 🆕
+- [ ] Post-game analysis:
+  - Count blunders & mistakes (moves that lose significant material)
+  - Detect brilliant moves (unexpected strong moves)
+  - Track average think time per move
+  - Detect opening name (match first 4-6 moves against opening database)
+  - Calculate rating change
+- [ ] Post-game review screen:
+  - Summary: "You played 32 moves, found 2 tactics, made 1 blunder"
+  - Move-by-move replay with annotations
+  - "Best move" suggestions for key positions
+- [ ] Enriched game card in history (show analysis highlights)
+
+#### Milestone 5.7: Adaptive Difficulty 🆕
+- [ ] Auto-adjust AI difficulty based on skill profile:
+  - After 3 consecutive wins → suggest harder difficulty
+  - After 3 consecutive losses → suggest easier difficulty
+  - Smooth interpolation within difficulty level
+- [ ] "Challenge Mode" toggle: AI adapts in real-time
+- [ ] Difficulty recommendation on game start
+
+#### Milestone 5.8: Account System Architecture 🆕
+- [ ] 3-tier account system:
+  - **Guest**: Play immediately, no data saved
+  - **Local Profile**: Full features, IndexedDB persistence
+  - **Family Account** (post-MVP): Multiple profiles on same device, parental dashboard
+- [ ] Profile screen:
+  - Skill level badge with icon
+  - Rating with progress bar to next level
+  - Quick stats (games played, win rate, current streak)
+  - Tactical skill radar chart
+  - Recent games list
+- [ ] Account switcher (for family sharing)
 
 #### Codex/Copilot Usage:
 - ✅ Generate: IndexedDB boilerplate
 - ✅ Generate: CRUD functions
+- ✅ Generate: Rating calculation algorithms
+- ✅ Generate: Tactical pattern detection
 - ⚠️ Manual: Design user flow for account creation
+- ⚠️ Manual: Tune rating system for kids (not too punishing)
 - ✅ Generate: Data migration utilities (if schema changes)
 
 #### Deliverable:
-- Persistent user profiles
-- Game history saved and viewable
+- Persistent user profiles with skill tracking
+- Enriched game history with post-game analysis
+- Adaptive difficulty system
+- Kid-friendly rating system with visible progress
 - Progress statistics
 
 ---
 
-### Phase 6: Badge System (Week 5)
-**Goal**: Gamification and motivation
+### Phase 6: Reward & Badge System (Week 6-7)
+**Goal**: Comprehensive gamification — badges, milestones, challenges, titles
 
-#### Milestone 6.1: Badge Definitions
+#### Milestone 6.1: Badge Definitions (Core Badges)
 - [ ] Define badge library:
   - 🏁 First Game (complete any game)
   - ♟️ First Capture
@@ -752,41 +870,99 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
   - 🧠 Complete Opening Tutorial
   - 🔥 3-Day Streak
   - 🔥 7-Day Streak
+  - 🔥 30-Day Streak
   - 🎯 Win vs AI Easy
   - 🎯 Win vs AI Medium
   - 🎯 Win vs AI Hard
   - 🔁 Use Undo 5 Times (learning is okay!)
   - 🌟 Earn 10 Badges
 
-#### Milestone 6.2: Badge Logic
+#### Milestone 6.2: Skill Badges 🆕
+- [ ] Rating milestone badges:
+  - 🐣 Hatching (reach 500 rating)
+  - 🐥 Fledgling (reach 700 rating)
+  - 🦅 Soaring (reach 1000 rating)
+  - 👑 Chess Champion (reach 1300 rating)
+- [ ] Tactical skill badges:
+  - ⚔️ Fork Master (execute 10 forks)
+  - 📌 Pin Expert (execute 10 pins)
+  - 💎 Brilliant Mind (play 5 brilliant moves)
+  - 🎯 Sharp Eye (play 10 games with 0 blunders)
+- [ ] Game phase badges:
+  - 📖 Opening Scholar (opening score > 80 in 5 games)
+  - ⚔️ Middlegame Warrior (middlegame score > 80 in 5 games)
+  - 🏆 Endgame Master (endgame score > 80 in 5 games)
+
+#### Milestone 6.3: Milestones & Titles 🆕
+- [ ] Progressive milestones (cumulative):
+  - Play 10 / 50 / 100 / 500 games
+  - Win 5 / 25 / 100 games
+  - Complete 3 / 6 / 10 lessons
+  - Reach each skill level
+- [ ] Title system (display next to username):
+  - 🌱 "Newcomer" (0-10 games)
+  - ♟️ "Pawn Pusher" (10-50 games)
+  - 🐴 "Knight Rider" (50-100 games + rating 700+)
+  - 🏰 "Castle Builder" (100-200 games + rating 1000+)
+  - 👑 "Chess Master" (200+ games + rating 1300+)
+- [ ] Title displayed on profile and in-game
+
+#### Milestone 6.4: Daily & Weekly Challenges 🆕
+- [ ] Daily challenge system:
+  - "Win 1 game today"
+  - "Play without using undo"
+  - "Beat AI Medium"
+  - "Complete a lesson"
+  - Rotating pool of 20+ challenges
+- [ ] Weekly goals:
+  - "Play 5 games this week"
+  - "Improve your rating by 50 points"
+  - "Try all 3 AI difficulties"
+- [ ] Challenge rewards (bonus XP or special badges)
+- [ ] Challenge streak tracking
+
+#### Milestone 6.5: Badge Logic
 - [ ] `BadgeSystem` class with check methods
+- [ ] `RewardEngine` class for challenges & milestones
 - [ ] Hook badge checks into relevant events:
   - Game completion
-  - Login (check streak)
+  - Login (check streak + daily challenge)
   - Tutorial completion
+  - Rating changes
+  - Tactical skill updates
 - [ ] Award badge + save to DB
+- [ ] Track milestone progress (e.g., "15/50 games played")
 
-#### Milestone 6.3: Badge UI
+#### Milestone 6.6: Reward UI
 - [ ] Badge notification (toast/popup when earned)
-- [ ] Badge collection screen (grid view)
-- [ ] Lock/unlock states
+- [ ] Badge collection screen (grid view with categories)
+- [ ] Lock/unlock states with progress indicators
 - [ ] Badge details (description, date earned)
+- [ ] Daily challenge widget on home screen
+- [ ] Weekly progress summary
+- [ ] Title selector on profile
+- [ ] Milestone progress bars
 - [ ] Load badge icons from `assets/ui/badges/` (see [ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md))
 
 #### Codex/Copilot Usage:
 - ✅ Generate: Badge checking logic
+- ✅ Generate: Challenge rotation system
 - ✅ Generate: Notification animation
 - ⚠️ Manual: Design fun badge icons
+- ⚠️ Manual: Balance challenge difficulty for kids
 - ✅ Generate: Grid layout for badge collection
 
 #### Deliverable:
-- Working badge system with 10-15 badges
+- Working badge system with 25+ badges across categories
+- Milestone tracking with progress bars
+- Daily & weekly challenge system
+- Title system for players
 - Engaging unlock notifications
 
 ---
 
-### Phase 7: Tutorial/Guided Play (Week 6-7)
-**Goal**: Interactive chess lessons with AI companion
+### Phase 7: Tutorial/Guided Play & Learning Path (Week 7-8)
+**Goal**: Interactive chess lessons with AI companion + personalized learning path
 
 #### Milestone 7.1: Tutorial Architecture
 - [ ] Create `TutorialManager` class
@@ -837,7 +1013,42 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 - [ ] Unlimited undo in tutorial mode
 - [ ] Explanation panel after each move
 
-#### Milestone 7.6: (Optional) AI API Integration
+#### Milestone 7.6: Personalized Learning Path 🆕
+- [ ] Implement `LearningPath` engine:
+  - Analyze player's skill profile (from Phase 5)
+  - Identify weakest areas (opening/middlegame/endgame, specific tactics)
+  - Generate ordered list of recommended lessons
+- [ ] Lesson recommendations:
+  - "You often hang pieces → Try the 'Protecting Your Pieces' lesson"
+  - "Your opening is weak → Start with 'Control the Center'"
+  - "Great at tactics! → Try advanced endgame lessons"
+- [ ] Learning path UI:
+  - Visual path/roadmap (connected nodes)
+  - Current position highlighted
+  - Completed lessons with checkmarks
+  - "Recommended Next" badge on suggested lesson
+- [ ] Weekly learning goals:
+  - "Complete 2 lessons this week"
+  - "Practice fork tactics 3 times"
+  - Auto-generated based on skill profile
+- [ ] Progress integration:
+  - After completing lessons, update skill profile
+  - Recalculate learning path periodically
+  - Show improvement: "Your opening score improved from 45 → 68!"
+
+#### Milestone 7.7: Adaptive Tutorial Difficulty 🆕
+- [ ] Adjust lesson difficulty based on player level:
+  - Beginner: More hints, simpler positions, more encouragement
+  - Intermediate: Fewer hints, complex positions, tactical challenges
+  - Advanced: Minimal hints, multi-step tactics, positional puzzles
+- [ ] Dynamic hint progression:
+  - Strong players get subtle hints first
+  - Struggling players get more explicit guidance
+- [ ] Performance tracking per lesson:
+  - Attempts needed, hints used, time taken
+  - Feed back into skill profile
+
+#### Milestone 7.8: (Optional) AI API Integration
 - [ ] Create `AIExplanationClient` class
 - [ ] Send position + move to LLM API
 - [ ] Parse response into kid-friendly explanation
@@ -846,26 +1057,32 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 
 #### Codex/Copilot Usage:
 - ✅ Generate: Lesson data structures
+- ✅ Generate: Learning path algorithm
 - ⚠️ Manual: Write lesson content (needs pedagogical thought)
 - ✅ Generate: Hint algorithm
 - ✅ Generate: Dialogue templates
 - ⚠️ Manual: Curate and tone-check companion messages
+- ⚠️ Manual: Map skill weaknesses to appropriate lessons
 - ✅ Generate: API client boilerplate
 - ⚠️ Manual: Design LLM prompts for explanations
 
 #### Testing:
 - Playtest each lesson with target age group
+- Verify learning path recommendations make sense
+- Ensure adaptive difficulty feels right per skill level
 - Ensure hints are helpful but not overly directive
 - Check that explanations are understandable
 
 #### Deliverable:
 - 6-10 interactive lessons
 - Working AI companion
+- Personalized learning path with visual roadmap
+- Adaptive difficulty based on player skill
 - Engaging tutorial experience
 
 ---
 
-### Phase 8: Offline PWA & Performance (Week 7-8)
+### Phase 8: Offline PWA & Performance (Week 8-9)
 **Goal**: Full offline support, fast loading, installable
 
 #### Milestone 8.1: Service Worker
@@ -911,7 +1128,7 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 
 ---
 
-### Phase 9: Polish & Audio (Week 8)
+### Phase 9: Polish & Audio (Week 9-10)
 **Goal**: Sound effects, animations, juice
 
 #### Milestone 9.1: Audio System
@@ -954,7 +1171,7 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 
 ---
 
-### Phase 10: Testing & Refinement (Week 9)
+### Phase 10: Testing & Refinement (Week 10-12)
 **Goal**: Bug fixes, playtesting, balancing
 
 #### Tasks:
@@ -1133,8 +1350,9 @@ function getKnightMoves(board: Board, position: Position): Position[] {
 | UI | Generate DOM code | Design visuals, UX flow | 60/40 |
 | AI | Generate minimax | Tune weights, test difficulty | 65/35 |
 | Themes | Generate CSS | Design color schemes | 50/50 |
-| Data | Generate CRUD | Design schema | 70/30 |
-| Tutorial | Generate structure | Write content | 40/60 |
+| Data & Accounts | Generate CRUD, rating algo | Design schema, tune rating for kids | 65/35 |
+| Rewards & Badges | Generate badge logic, challenges | Design badges, balance difficulty | 55/45 |
+| Tutorial & Learning | Generate structure, path algo | Write content, map weaknesses | 40/60 |
 | PWA | Generate SW config | Test on devices | 80/20 |
 | Polish | Generate animations | Select sounds, adjust timing | 50/50 |
 
@@ -1567,6 +1785,219 @@ class BoardRenderer {
 
 ---
 
+### E. Account System & Skill Engine
+
+#### Skill Rating Algorithm (Kid-Friendly Elo)
+
+```typescript
+class SkillEngine {
+  // Simplified Elo for kids: less punishing, more rewarding
+  private K_FACTOR = 32; // Standard, but with floor protection
+  
+  calculateNewRating(
+    playerRating: number,
+    opponentStrength: number, // AI difficulty mapped to rating
+    result: 'win' | 'loss' | 'draw'
+  ): { newRating: number; change: number } {
+    const expected = 1 / (1 + Math.pow(10, (opponentStrength - playerRating) / 400));
+    const actual = result === 'win' ? 1 : result === 'draw' ? 0.5 : 0;
+    
+    let change = Math.round(this.K_FACTOR * (actual - expected));
+    
+    // Kid-friendly adjustments:
+    // - Minimum +5 for a win (always feel rewarded)
+    // - Maximum -10 for a loss (not too punishing)
+    // - Bonus for beating higher-rated opponent
+    if (result === 'win') {
+      change = Math.max(change, 5);
+      if (opponentStrength > playerRating) {
+        change = Math.round(change * 1.5); // Bonus for upset
+      }
+    } else if (result === 'loss') {
+      change = Math.max(change, -10); // Floor on losses
+    }
+    
+    const newRating = Math.max(400, playerRating + change); // Never below 400
+    return { newRating, change };
+  }
+  
+  // Map AI difficulty to approximate rating
+  getAIRating(difficulty: 'easy' | 'medium' | 'hard'): number {
+    return { easy: 600, medium: 900, hard: 1200 }[difficulty];
+  }
+  
+  // Determine skill level from rating
+  getSkillLevel(rating: number): SkillLevel {
+    if (rating < 700) return 'beginner';
+    if (rating < 1000) return 'developing';
+    if (rating < 1300) return 'intermediate';
+    return 'advanced';
+  }
+}
+```
+
+#### Tactical Pattern Detection
+
+```typescript
+class TacticalAnalyzer {
+  // Run after each move to detect tactics
+  analyzeMoveForTactics(
+    boardBefore: Board,
+    boardAfter: Board,
+    move: Move
+  ): DetectedTactic[] {
+    const tactics: DetectedTactic[] = [];
+    
+    // Detect fork: piece attacks 2+ higher-value pieces
+    if (this.isFork(boardAfter, move)) {
+      tactics.push({ type: 'fork', piece: move.piece, square: move.to });
+    }
+    
+    // Detect pin: piece restricts opponent piece movement
+    if (this.isPin(boardAfter, move)) {
+      tactics.push({ type: 'pin', piece: move.piece, square: move.to });
+    }
+    
+    // Detect skewer: attack through a valuable piece to one behind
+    if (this.isSkewer(boardAfter, move)) {
+      tactics.push({ type: 'skewer', piece: move.piece, square: move.to });
+    }
+    
+    // Detect discovered attack
+    if (this.isDiscoveredAttack(boardBefore, boardAfter, move)) {
+      tactics.push({ type: 'discovered_attack', piece: move.piece, square: move.to });
+    }
+    
+    return tactics;
+  }
+  
+  // Detect blunders: moves that lose significant material
+  isBlunder(boardBefore: Board, boardAfter: Board, move: Move): boolean {
+    const materialBefore = this.evaluateMaterial(boardBefore, move.color);
+    // Simulate opponent's best response
+    const bestResponse = this.getBestResponse(boardAfter);
+    const boardAfterResponse = applyMove(boardAfter, bestResponse);
+    const materialAfter = this.evaluateMaterial(boardAfterResponse, move.color);
+    
+    return (materialBefore - materialAfter) > 200; // Lost 2+ pawns worth
+  }
+  
+  // Detect brilliant moves: unexpected strong moves
+  isBrilliant(boardBefore: Board, move: Move, allMoves: Move[]): boolean {
+    // A move is brilliant if:
+    // 1. It's the best move by a significant margin
+    // 2. It involves a sacrifice or non-obvious tactic
+    // 3. Most moves in the position are significantly worse
+    const moveScores = allMoves.map(m => ({
+      move: m,
+      score: this.evaluateMove(boardBefore, m)
+    }));
+    
+    const bestScore = Math.max(...moveScores.map(ms => ms.score));
+    const thisScore = this.evaluateMove(boardBefore, move);
+    const avgScore = moveScores.reduce((s, ms) => s + ms.score, 0) / moveScores.length;
+    
+    return thisScore === bestScore && (thisScore - avgScore) > 150;
+  }
+}
+```
+
+#### Learning Path Algorithm
+
+```typescript
+class LearningPathEngine {
+  generatePath(profile: SkillProfile): LearsonRecommendation[] {
+    const recommendations: LessonRecommendation[] = [];
+    
+    // Priority 1: Address mistake patterns
+    for (const pattern of profile.mistakePatterns) {
+      const lesson = this.getLessonForPattern(pattern);
+      if (lesson && !this.isCompleted(lesson)) {
+        recommendations.push({
+          lesson,
+          reason: this.getReasonForPattern(pattern),
+          priority: 'high'
+        });
+      }
+    }
+    
+    // Priority 2: Weakest game phase
+    const weakestPhase = this.getWeakestPhase(profile.phaseScores);
+    const phaseLessons = this.getLessonsForPhase(weakestPhase);
+    for (const lesson of phaseLessons) {
+      if (!this.isCompleted(lesson)) {
+        recommendations.push({
+          lesson,
+          reason: `Strengthen your ${weakestPhase}`,
+          priority: 'medium'
+        });
+      }
+    }
+    
+    // Priority 3: Weakest tactical skill
+    const weakestTactic = this.getWeakestTactic(profile.tacticalSkills);
+    const tacticLessons = this.getLessonsForTactic(weakestTactic);
+    for (const lesson of tacticLessons) {
+      if (!this.isCompleted(lesson)) {
+        recommendations.push({
+          lesson,
+          reason: `Practice ${weakestTactic} tactics`,
+          priority: 'medium'
+        });
+      }
+    }
+    
+    // Priority 4: Next difficulty level lessons
+    if (recommendations.length < 3) {
+      const nextLevel = this.getNextLevelLessons(profile.level);
+      recommendations.push(...nextLevel.map(l => ({
+        lesson: l,
+        reason: 'Challenge yourself!',
+        priority: 'low' as const
+      })));
+    }
+    
+    return recommendations.slice(0, 5); // Top 5 recommendations
+  }
+  
+  private patternToLesson: Record<string, string> = {
+    'hangs_pieces': 'protecting-your-pieces',
+    'ignores_checks': 'responding-to-checks',
+    'poor_trades': 'piece-value-exchange',
+    'weak_opening': 'opening-basics',
+    'no_castling': 'castle-for-safety',
+    'queen_too_early': 'dont-move-queen-early',
+  };
+}
+```
+
+#### User Flow
+
+```
+App Start
+  ├─ First time? → Welcome Screen → Create Profile (name + avatar)
+  │                                    └→ Start with "Beginner" path
+  │
+  └─ Returning? → Profile Dashboard
+                    ├─ Quick Play (last difficulty)
+                    ├─ Today's Challenge ⭐
+                    ├─ Continue Learning Path →
+                    ├─ View Progress (rating chart, badges)
+                    └─ Switch Profile (family mode)
+                    
+Post-Game Flow:
+  Game Over → Result Screen
+                ├─ Rating Change: "+12 ⭐ (Rating: 623 → 635)"
+                ├─ Game Summary: "32 moves, 2 tactics found, 1 blunder"
+                ├─ Badges Earned (if any): 🏅 animation
+                ├─ Challenge Progress: "Daily: 1/1 ✅"
+                ├─ [Review Game] → move-by-move replay
+                ├─ [Play Again] → same settings
+                └─ [Back to Dashboard]
+```
+
+---
+
 ## Summary Checklist
 
 ### Before Starting Development
@@ -1642,7 +2073,7 @@ class BoardRenderer {
 
 ---
 
-**Total Estimated Timeline**: 8-9 weeks for MVP
-**Post-MVP**: Polish, user testing, iterations (+2-3 weeks)
+**Total Estimated Timeline**: 10-12 weeks for MVP (expanded with Account System)
+**Post-MVP**: Family accounts, cloud sync, user testing, iterations (+3-4 weeks)
 
 **Good luck building! 🚀 ♟️ ✨**
