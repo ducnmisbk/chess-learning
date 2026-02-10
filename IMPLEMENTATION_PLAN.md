@@ -841,6 +841,34 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
   - Recent games list
 - [ ] Account switcher (for family sharing)
 
+#### Milestone 5.9: UI Flow Integration & Kid-Friendly UX ✅
+- [x] Integrate account screen into main app flow:
+  - Check user on app launch
+  - Show account screen if no user logged in
+  - Automatic transition to game after login
+- [x] Add profile management to game menu:
+  - "My Profile" section in hamburger menu
+  - Display current user avatar and username
+  - Logout button
+  - Switch account button
+  - Seamless navigation back to account screen
+- [x] Kid-friendly design improvements (ages 5-10):
+  - Rounded, playful font (Fredoka from Google Fonts)
+  - Colorful gradient backgrounds with floating elements
+  - Hero badges ("Offline • Kid-Friendly", "Ready to play")
+  - Step-by-step instructions (Step 1-2-3)
+  - Helper text for guidance ("This is your chess buddy")
+  - Large, rounded buttons (14px border radius, 85% padding)
+  - Pop-in animations and smooth transitions
+  - Emoji avatars with hover effects (rotate, scale)
+  - Responsive grid layouts (CSS Grid, auto-fit)
+  - Mobile-first design with media queries
+- [x] Enhanced Fun theme:
+  - Oversized pieces (120% size)
+  - Slight overflow beyond square boundaries
+  - Drop shadow effects for depth
+  - Preserved hover/select animations
+
 #### Codex/Copilot Usage:
 - ✅ Generate: IndexedDB boilerplate
 - ✅ Generate: CRUD functions
@@ -851,11 +879,15 @@ See **[ASSETS_ORGANIZATION_GUIDE.md](ASSETS_ORGANIZATION_GUIDE.md)** for:
 - ✅ Generate: Data migration utilities (if schema changes)
 
 #### Deliverable:
-- Persistent user profiles with skill tracking
-- Enriched game history with post-game analysis
-- Adaptive difficulty system
-- Kid-friendly rating system with visible progress
-- Progress statistics
+- ✅ Persistent user profiles with local storage (IndexedDB + LocalStorage fallback)
+- ✅ Complete UI flow: Account screen ↔ Game screen with profile menu
+- ✅ Kid-friendly UX design (ages 5-10) with Fredoka font and playful animations
+- ✅ Enhanced Fun theme with oversized pieces
+- ✅ 12 emoji avatar options with guest mode
+- ✅ Progress statistics tracking (streaks, win rates)
+- [ ] Enriched game history with post-game analysis (Milestone 5.6)
+- [ ] Adaptive difficulty system (Milestone 5.7)
+- [ ] Kid-friendly rating system with visible progress (Milestone 5.5)
 
 ---
 

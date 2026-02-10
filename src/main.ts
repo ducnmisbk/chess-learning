@@ -134,9 +134,9 @@ console.log('──────────────────────�
 
 // Export for future use
 export const app = {
-  version: '0.2.0',
+  version: '0.5.0',
   mode: 'development',
   offline: true,
-  phase: 2,
+  phase: 5,
   gameScreen
 };

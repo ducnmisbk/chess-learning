@@ -1,6 +1,6 @@
 {
   "name": "chess-learning",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "description": "Offline-first chess learning game for kids aged 5-10",
   "type": "module",
   "scripts": {

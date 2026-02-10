@@ -1,16 +1,17 @@
 # ♟️ Chess Learning - Offline Chess Game for Kids
 
-## 🎯 **IMPLEMENTATION STATUS: Phase 1-4 COMPLETE (40% Done)**
+## 🎯 **IMPLEMENTATION STATUS: Phase 1-5 SUBSTANTIALLY COMPLETE (50% Done)**
 
 ### ✅ Completed Phases
 - ✅ **Phase 0**: Project Setup & Foundation
 - ✅ **Phase 1**: Core Game Engine (all chess rules implemented)
 - ✅ **Phase 2**: Basic UI & 2-Player Mode (fully playable)
 - ✅ **Phase 3**: AI Opponent (Easy/Medium/Hard difficulty)
-- ✅ **Phase 4**: Theme System (3 themes + 8-color customization)
+- ✅ **Phase 4**: Theme System (3 themes + 8-color customization + Fun theme enhancement)
+- 🔄 **Phase 5**: Data Persistence & User Accounts (UI flow complete, advanced analytics pending)
 
-### 🚧 Next Up
-- [ ] **Phase 5**: Data Persistence (user accounts, game history)
+### 🚪 Next Up
+- [ ] **Phase 5.5-5.8**: Advanced analytics (skill rating, post-game analysis, adaptive difficulty)
 - [ ] **Phase 6**: Badge System (achievements)
 - [ ] **Phase 7**: Tutorial/Guided Play (ChessBuddy AI companion)
 - [ ] **Phase 8**: Polish & Animations
@@ -44,9 +45,31 @@
 ✅ **Theme System**
 - **Classic Theme**: Traditional wooden board
 - **Minimalist Theme**: 8-color customization system
-- **Fun Theme**: Colorful cartoon style
+- **Fun Theme**: Colorful cartoon style with oversized pieces (120% size, slight overflow)
 - Theme switcher with live preview
 - Persistent theme selection
+
+✅ **User Account System** (NEW!)
+- Kid-friendly account creation screen with step-by-step guidance
+- 12 emoji avatars to choose from (🦁🐯🐻🦊🐼🐨🦉🦅🐸🐙🦄🐲)
+- Guest mode for quick play
+- Profile management in hamburger menu (logout/switch account)
+- Complete UI flow: Account screen ↔ Game screen
+- IndexedDB storage with LocalStorage fallback
+
+✅ **Kid-Friendly UX Design** (NEW!)
+- Rounded, playful font (Google Fonts Fredoka)
+- Colorful gradient backgrounds with floating elements
+- Hero badges and helper text
+- Pop-in animations and smooth transitions
+- Large, rounded buttons optimized for ages 5-10
+- Mobile-responsive design
+
+✅ **Progress Tracking** (NEW!)
+- Game history with full move list
+- Win/loss statistics
+- Daily play streak tracking
+- Performance by AI difficulty
 
 ---
 
@@ -64,9 +87,9 @@ assets/
 ├── ui/              Pending (Phase 4+)
 ├── mascot/          Pending (Phase 7)
 ├── sounds/          Pending (Phase 9)
-└── avatars/         Pending (Phase 5)
+└── avatars/         12 emoji avatars ✅ (Phase 5)
 
-Total: 73 image files ready
+Total: 73 image files + 12 emoji avatars ready
 ```
 
 ### 🎨 Tính năng độc đáo: 8-Color System
@@ -88,6 +111,14 @@ Total: 73 image files ready
 4. 💜💛 Purple vs Yellow
 5. 🌈 Rainbow 1 (blue vs yellow)
 6. 🌈 Rainbow 2 (purple vs green)
+
+### 🎭 Fun Theme Enhancement
+
+**Oversized Pieces**:
+- Pieces are 120% size for better visibility
+- Slight overflow beyond square boundaries for playful feel
+- Drop shadow effects for depth
+- Optimized for ages 5-10
 
 ---
 
@@ -158,54 +189,79 @@ Follow: [IMPLEMENTATION_PLAN.md - Phase 1](IMPLEMENTATION_PLAN.md#phase-1-core-g
 
 2. **👶 Kid-First Design**
    - Ages 5-10 focus
-   - Simple, colorful UI
-   - No complex menus
+   - Playful Fredoka font
+   - Colorful gradient backgrounds with floating elements
+   - Large, rounded buttons optimized for small hands
+   - Hero badges and step-by-step guidance
+   - 12 fun emoji avatars (🦁🐯🐻🦊🐼🐨🦉🦅🐸🐙🦄🐲)
+   - Pop-in animations and smooth transitions
 
 3. **🎓 Educational**
-   - Guided Play with AI companion
+   - Guided Play with AI companion (planned)
    - Explanations in simple language
    - Encourage experimentation (unlimited undo)
 
 4. **📱 Offline-First**
    - 100% local, no servers
-   - PWA installable
+   - IndexedDB storage with LocalStorage fallback
+   - No internet required
    - Works in schools without wifi
 
 5. **🤖 Smart AI Companion**
-   - "ChessBuddy" mascot (owl recommended)
-   - Explains moves in kid-friendly way
-   - Celebrates progress
+   - 3 difficulty levels (Easy/Medium/Hard)
+   - "ChessBuddy" mascot planned (owl recommended)
+   - Explains moves in kid-friendly way (planned)
+   - Celebrates progress (planned)
+
+6. **🎮 Complete User Experience**
+   - Seamless account flow (Account ↔ Game screen)
+   - Profile management in hamburger menu
+   - Guest mode for quick play
+   - Game history and statistics tracking
+   - Win streak motivation
 
 ---
 
 ## 🎯 Development Roadmap
 
-### ✅ Completed (Weeks 1-4) - Phases 0-4
+### ✅ Completed (Weeks 1-5) - Phases 0-5 Core
 - [x] Assets organized ✅
 - [x] Documentation complete ✅
 - [x] Phase 0: Project setup ✅
 - [x] Phase 1: Chess engine ✅
 - [x] Phase 2: Basic UI ✅
 - [x] Phase 3: AI opponent (Easy/Medium/Hard) ✅
-- [x] Phase 4: Theme system with 3 themes + color customization ✅
+- [x] Phase 4: Theme system with 3 themes + color customization + Fun theme enhancement ✅
+- [x] Phase 5 Core: User accounts, UI flow integration, kid-friendly UX design ✅
+  - [x] IndexedDB storage with fallback
+  - [x] Account creation with 12 emoji avatars
+  - [x] Guest mode
+  - [x] Complete UI flow (Account ↔ Game screen)
+  - [x] Profile menu (logout/switch account)
+  - [x] Kid-friendly design (Fredoka font, gradients, animations)
+  - [x] Game history and progress tracking
+  - [x] Win/loss statistics
 
-**Status**: Playable 2-player + AI game with 3 difficulty levels and theme selection
+**Status**: Fully playable game with user accounts and kid-friendly UI
 
-### 🚧 In Progress / Next (Weeks 5-6)
-- [ ] Phase 5: User accounts & persistence (IndexedDB)
+### 🚧 In Progress (Weeks 5-6)
+- [ ] Phase 5 Advanced: Analytics & adaptive features
+  - [ ] Skill rating system (400-1600)
+  - [ ] Post-game analysis (blunders, brilliant moves)
+  - [ ] Tactical pattern detection
+  - [ ] Adaptive difficulty
+
+### Mid-term (Weeks 6-9)
 - [ ] Phase 6: Badge system (achievements & gamification)
+- [ ] Phase 7: Tutorial with ChessBuddy AI companion
+- [ ] Phase 8: Polish + animations
+- [ ] Phase 9: Sound system (music & SFX)
 
-**Goal**: Complete game with progression and user tracking
-
-### Mid-term (Weeks 7-9)
-- [ ] Phase 7: Tutorial with ChessBuddy
-- [ ] Phase 8: PWA + offline support
-- [ ] Phase 9: Polish + audio
-
-**Goal**: Educational chess companion ready
+**Goal**: Educational chess companion with full gamification
 
 ### Polish (Week 10+)
-- [ ] Phase 10: User testing with kids
+- [ ] Phase 10: PWA + offline support
+- [ ] User testing with kids (ages 5-10)
 - [ ] Bug fixes and refinement
 - [ ] Performance optimization
 
