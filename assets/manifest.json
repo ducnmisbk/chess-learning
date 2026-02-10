@@ -1,0 +1,65 @@
+{
+  "version": "1.1.0",
+  "lastUpdated": "2026-02-10",
+  "pieces": {
+    "classic": {
+      "format": "png",
+      "count": 12,
+      "colors": ["white", "black"],
+      "path": "assets/pieces/classic/",
+      "status": "ready"
+    },
+    "minimalist": {
+      "format": "png",
+      "count": 48,
+      "colors": ["black", "white", "blue", "red", "green", "orange", "purple", "yellow"],
+      "piecesPerColor": 6,
+      "path": "assets/pieces/minimalist/",
+      "status": "ready",
+      "features": ["color-customization", "kid-friendly", "high-contrast"]
+    },
+    "fun": {
+      "format": "png",
+      "count": 12,
+      "colors": ["white", "black"],
+      "path": "assets/pieces/fun/",
+      "status": "ready"
+    }
+  },
+  "boards": {
+    "classic": {
+      "status": "pending",
+      "note": "Will use CSS-generated board"
+    },
+    "minimalist": {
+      "status": "pending",
+      "note": "Will use CSS-generated board"
+    },
+    "fun": {
+      "count": 1,
+      "files": ["board-pattern.png"],
+      "status": "ready"
+    }
+  },
+  "ui": {
+    "buttons": { "status": "pending" },
+    "icons": { "status": "pending" },
+    "badges": { "status": "pending" },
+    "highlights": { "status": "pending" }
+  },
+  "mascot": {
+    "status": "pending",
+    "note": "ChessBuddy character to be designed"
+  },
+  "sounds": {
+    "sfx": { "status": "pending" },
+    "music": { "status": "pending" }
+  },
+  "avatars": {
+    "status": "pending",
+    "target": "12 animal avatars"
+  },
+  "totalAssets": "73 files (pieces + board)",
+  "estimatedSize": "~3-4MB",
+  "readyForDevelopment": true
+}

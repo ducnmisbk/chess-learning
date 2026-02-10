@@ -1,0 +1,99 @@
+{
+  "themes": [
+    {
+      "id": "classic",
+      "name": "Classic",
+      "description": "Traditional wooden chess board",
+      "pieces": "assets/pieces/classic",
+      "board": "assets/boards/classic",
+      "pieceColors": {
+        "white": "white",
+        "black": "black"
+      },
+      "colors": {
+        "lightSquare": "#F0D9B5",
+        "darkSquare": "#B58863",
+        "highlight": "#646F40",
+        "check": "#E85D75"
+      }
+    },
+    {
+      "id": "minimalist",
+      "name": "Minimalist",
+      "description": "Clean colorful design - pick your colors!",
+      "pieces": "assets/pieces/minimalist",
+      "board": "assets/boards/minimalist",
+      "supportsColorCustomization": true,
+      "availableColors": [
+        "black",
+        "white",
+        "blue",
+        "red",
+        "green",
+        "orange",
+        "purple",
+        "yellow"
+      ],
+      "pieceColors": {
+        "white": "blue",
+        "black": "red"
+      },
+      "colorPresets": [
+        {
+          "name": "Classic",
+          "white": "white",
+          "black": "black"
+        },
+        {
+          "name": "Ocean vs Fire",
+          "white": "blue",
+          "black": "red"
+        },
+        {
+          "name": "Forest vs Sunset",
+          "white": "green",
+          "black": "orange"
+        },
+        {
+          "name": "Purple vs Yellow",
+          "white": "purple",
+          "black": "yellow"
+        },
+        {
+          "name": "Rainbow 1",
+          "white": "blue",
+          "black": "yellow"
+        },
+        {
+          "name": "Rainbow 2",
+          "white": "purple",
+          "black": "green"
+        }
+      ],
+      "colors": {
+        "lightSquare": "#EEEEEE",
+        "darkSquare": "#BBBBBB",
+        "highlight": "#7F9ACF",
+        "check": "#FF6B6B"
+      }
+    },
+    {
+      "id": "fun",
+      "name": "Fun",
+      "description": "Colorful and playful cartoon style",
+      "pieces": "assets/pieces/fun",
+      "board": "assets/boards/fun",
+      "pieceColors": {
+        "white": "white",
+        "black": "black"
+      },
+      "colors": {
+        "lightSquare": "#FFF4E6",
+        "darkSquare": "#7FB3D5",
+        "highlight": "#FFD93D",
+        "check": "#FF6B9D"
+      }
+    }
+  ],
+  "defaultTheme": "classic"
+}
