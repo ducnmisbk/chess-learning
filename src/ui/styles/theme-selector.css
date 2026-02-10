@@ -9,6 +9,17 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Theme selector in menu (no card styling) */
+.menu-panel .theme-selector {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.menu-panel .theme-selector h3 {
+  display: none; /* Hide title in menu since menu has its own title */
+}
+
 .theme-selector h3 {
   font-size: var(--font-size-lg);
   margin-bottom: var(--spacing-md);

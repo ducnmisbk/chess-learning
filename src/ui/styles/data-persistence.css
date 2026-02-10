@@ -264,14 +264,14 @@
   flex: 1;
 }
 
-.game-title {
+.game-card .game-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-.game-mode {
+.game-card .game-mode {
   font-size: 0.9rem;
   color: var(--text-secondary);
   padding: 0.2rem 0.5rem;
@@ -279,14 +279,14 @@
   border-radius: 4px;
 }
 
-.game-info {
+.game-card .game-info {
   display: flex;
   gap: 1rem;
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
 
-.game-actions {
+.game-card .game-actions {
   display: flex;
   gap: 0.5rem;
 }

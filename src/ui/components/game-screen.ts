@@ -52,6 +52,7 @@ export class GameScreen {
   private redoButton!: HTMLButtonElement;
   private newGameButton!: HTMLButtonElement;
   private aiThinkingIndicator!: HTMLElement;
+  private menuOverlay!: HTMLElement;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -93,6 +94,10 @@ export class GameScreen {
   private createLayout(): void {
     this.container.innerHTML = '';
     
+    // Header with hamburger menu
+    const header = this.createHeader();
+    this.container.appendChild(header);
+    
     const gameContainer = document.createElement('div');
     gameContainer.className = 'game-container';
     
@@ -105,6 +110,91 @@ export class GameScreen {
     gameContainer.appendChild(controlsPanel);
     
     this.container.appendChild(gameContainer);
+    
+    // Menu overlay (hidden by default)
+    this.menuOverlay = this.createMenuOverlay();
+    this.container.appendChild(this.menuOverlay);
+  }
+
+  /**
+   * Create header with hamburger menu
+   */
+  private createHeader(): HTMLElement {
+    const header = document.createElement('div');
+    header.className = 'game-header';
+    
+    const title = document.createElement('h1');
+    title.textContent = '♟️ Chess Learning';
+    title.className = 'game-title';
+    
+    const menuButton = document.createElement('button');
+    menuButton.className = 'hamburger-button';
+    menuButton.innerHTML = '☰';
+    menuButton.onclick = () => this.toggleMenu();
+    
+    header.appendChild(title);
+    header.appendChild(menuButton);
+    
+    return header;
+  }
+
+  /**
+   * Create menu overlay
+   */
+  private createMenuOverlay(): HTMLElement {
+    const overlay = document.createElement('div');
+    overlay.className = 'menu-overlay';
+    overlay.style.display = 'none';
+    
+    const menu = document.createElement('div');
+    menu.className = 'menu-panel';
+    
+    const menuHeader = document.createElement('div');
+    menuHeader.className = 'menu-header';
+    
+    const menuTitle = document.createElement('h2');
+    menuTitle.textContent = 'Settings';
+    
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = '✕';
+    closeButton.onclick = () => this.toggleMenu();
+    
+    menuHeader.appendChild(menuTitle);
+    menuHeader.appendChild(closeButton);
+    menu.appendChild(menuHeader);
+    
+    // Theme selector in menu
+    const themeSectionTitle = document.createElement('h3');
+    themeSectionTitle.textContent = '🎨 Themes';
+    themeSectionTitle.className = 'menu-section-title';
+    menu.appendChild(themeSectionTitle);
+    
+    const themeSelectorElement = this.themeSelector.render();
+    themeSelectorElement.classList.remove('card'); // Remove card styling in menu
+    menu.appendChild(themeSelectorElement);
+    
+    overlay.appendChild(menu);
+    
+    // Close on overlay click
+    overlay.onclick = (e) => {
+      if (e.target === overlay) {
+        this.toggleMenu();
+      }
+    };
+    
+    return overlay;
+  }
+
+  /**
+   * Toggle menu visibility
+   */
+  private toggleMenu(): void {
+    if (this.menuOverlay.style.display === 'none') {
+      this.menuOverlay.style.display = 'flex';
+    } else {
+      this.menuOverlay.style.display = 'none';
+    }
   }
 
   /**
@@ -117,10 +207,6 @@ export class GameScreen {
     // Game mode section
     this.gameModeSection = this.createGameModeSection();
     panel.appendChild(this.gameModeSection);
-    
-    // Theme selector section
-    const themeSelectorElement = this.themeSelector.render();
-    panel.appendChild(themeSelectorElement);
     
     // Game info section
     const gameInfo = this.createGameInfo();

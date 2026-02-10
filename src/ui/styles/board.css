@@ -5,8 +5,12 @@
 .game-container {
   display: flex;
   gap: var(--spacing-lg);
-  max-width: 1200px;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  flex: 1;
+  align-items: flex-start;
 }
 
 /* Board wrapper */
