@@ -6,6 +6,7 @@
 
 import { ChessGame } from '../../core/game-state';
 import { GameStatus, PieceColor } from '../../core/types';
+import type { Position } from '../../core/types';
 import { BoardRenderer } from '../board/board-renderer';
 import { InteractionHandler } from '../board/interaction-handler';
 import { AIPlayer, AIDifficulty } from '../../ai/ai-interface';
@@ -13,7 +14,17 @@ import { AIEasy } from '../../ai/ai-easy';
 import { AIMedium } from '../../ai/ai-medium';
 import { AIHard } from '../../ai/ai-hard';
 import { themeManager, ThemeSelector } from '../themes';
-import { userManager, gameHistoryManager, progressTracker, User } from '../../data';
+import { ProfileScreen } from './profile-screen';
+import { lessons, TutorialManager, LessonStage } from '../../tutorial';
+import { fromAlgebraic } from '../../utils/coordinates';
+import { 
+  userManager, 
+  gameHistoryManager, 
+  progressTracker, 
+  User,
+  SkillEngine,
+  storageManager
+} from '../../data';
 
 /**
  * Game modes
@@ -41,9 +52,23 @@ export class GameScreen {
   
   // Game tracking (Phase 5)
   private gameStartTime: number = Date.now();
+  private moveTimes: number[] = [];
+  private lastMoveTime: number = Date.now();
   private currentDifficulty: AIDifficulty = AIDifficulty.EASY;
   private currentUser: User | null = null;
   private onLogoutCallback?: () => void;
+  private onProfileCallback?: () => void;
+  private profileOverlay: HTMLElement | null = null;
+  private tutorialManager: TutorialManager;
+  private tutorialPanel: HTMLElement | null = null;
+  private tutorialModal: HTMLElement | null = null;
+  private tutorialActive: boolean = false;
+  private tutorialLessonTitleEl: HTMLElement | null = null;
+  private tutorialObjectiveEl: HTMLElement | null = null;
+  private tutorialHintEl: HTMLElement | null = null;
+  private tutorialFeedbackEl: HTMLElement | null = null;
+  private twoPlayerBtn: HTMLButtonElement | null = null;
+  private vsAiBtn: HTMLButtonElement | null = null;
   
   // UI Elements
   private gameModeSection!: HTMLElement;
@@ -68,6 +93,8 @@ export class GameScreen {
     
     // Initialize interaction
     this.interaction = new InteractionHandler(this.game, this.renderer);
+
+    this.tutorialManager = new TutorialManager(lessons);
     
     // Initialize theme selector
     this.themeSelector = new ThemeSelector(themeManager);
@@ -89,6 +116,13 @@ export class GameScreen {
   }
 
   /**
+   * Set callback for profile view
+   */
+  setOnProfile(callback: () => void): void {
+    this.onProfileCallback = callback;
+  }
+
+  /**
    * Initialize and render the game screen
    */
   initialize(): void {
@@ -97,7 +131,7 @@ export class GameScreen {
     this.interaction.initialize();
     
     // Setup callbacks
-    this.interaction.setOnMove(() => this.onMoveComplete());
+    this.interaction.setOnMove((from, to) => this.onMoveComplete(from, to));
     
     // Initial render
     this.renderer.renderBoard(this.game.getBoard());
@@ -201,6 +235,12 @@ export class GameScreen {
       const accountActionsDiv = document.createElement('div');
       accountActionsDiv.className = 'menu-account-actions';
       
+      const viewProfileBtn = document.createElement('button');
+      viewProfileBtn.className = 'button-primary button-small';
+      viewProfileBtn.textContent = '📊 View Profile';
+      viewProfileBtn.onclick = () => this.handleViewProfile();
+      accountActionsDiv.appendChild(viewProfileBtn);
+
       const switchAccountBtn = document.createElement('button');
       switchAccountBtn.className = 'button-secondary button-small';
       switchAccountBtn.textContent = '🔄 Switch Account';
@@ -220,6 +260,30 @@ export class GameScreen {
       divider.className = 'menu-divider';
       menu.appendChild(divider);
     }
+
+    // Tutorial section
+    const tutorialSection = document.createElement('div');
+    tutorialSection.className = 'menu-section';
+
+    const tutorialTitle = document.createElement('h3');
+    tutorialTitle.textContent = '📘 Tutorials';
+    tutorialTitle.className = 'menu-section-title';
+    tutorialSection.appendChild(tutorialTitle);
+
+    const tutorialButton = document.createElement('button');
+    tutorialButton.className = 'button-primary';
+    tutorialButton.textContent = 'Start a Lesson';
+    tutorialButton.onclick = () => {
+      this.toggleMenu();
+      this.showTutorialModal();
+    };
+    tutorialSection.appendChild(tutorialButton);
+
+    menu.appendChild(tutorialSection);
+
+    const tutorialDivider = document.createElement('hr');
+    tutorialDivider.className = 'menu-divider';
+    menu.appendChild(tutorialDivider);
     
     // Theme selector in menu
     const themeSectionTitle = document.createElement('h3');
@@ -255,6 +319,60 @@ export class GameScreen {
   }
 
   /**
+   * Handle view profile
+   */
+  private async handleViewProfile(): Promise<void> {
+    this.toggleMenu();
+    if (this.onProfileCallback) {
+      this.onProfileCallback();
+      return;
+    }
+    await this.showProfileModal();
+  }
+
+  /**
+   * Show profile as a modal overlay
+   */
+  private async showProfileModal(): Promise<void> {
+    if (this.profileOverlay || !this.currentUser) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay profile-modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal profile-modal';
+
+    const content = document.createElement('div');
+    content.className = 'profile-modal-content';
+
+    modal.appendChild(content);
+    overlay.appendChild(modal);
+
+    overlay.onclick = (event) => {
+      if (event.target === overlay) {
+        this.closeProfileModal();
+      }
+    };
+
+    document.body.appendChild(overlay);
+    this.profileOverlay = overlay;
+
+    const profileScreen = new ProfileScreen(content, this.currentUser);
+    profileScreen.setOnBack(() => this.closeProfileModal());
+    await profileScreen.render();
+  }
+
+  /**
+   * Close profile modal
+   */
+  private closeProfileModal(): void {
+    if (this.profileOverlay) {
+      document.body.removeChild(this.profileOverlay);
+      this.profileOverlay = null;
+    }
+  }
+
+  /**
    * Handle switch account
    */
   private handleSwitchAccount(): void {
@@ -277,6 +395,291 @@ export class GameScreen {
   }
 
   /**
+   * Create tutorial panel (hidden by default)
+   */
+  private createTutorialPanel(): HTMLElement {
+    const panel = document.createElement('div');
+    panel.className = 'tutorial-panel card';
+    panel.style.display = 'none';
+
+    panel.innerHTML = `
+      <div class="tutorial-panel-header">
+        <div>
+          <h3>📘 Tutorial</h3>
+          <div class="tutorial-lesson-title"></div>
+        </div>
+        <button class="button-secondary button-small tutorial-exit">Exit</button>
+      </div>
+      <div class="tutorial-objective"></div>
+      <div class="tutorial-hint"></div>
+      <div class="tutorial-feedback"></div>
+      <div class="tutorial-actions">
+        <button class="button-primary button-small tutorial-hint-btn">Get Hint</button>
+      </div>
+    `;
+
+    const exitBtn = panel.querySelector('.tutorial-exit') as HTMLButtonElement;
+    const hintBtn = panel.querySelector('.tutorial-hint-btn') as HTMLButtonElement;
+
+    exitBtn.onclick = () => this.stopTutorial();
+    hintBtn.onclick = () => this.handleHint();
+
+    this.tutorialLessonTitleEl = panel.querySelector('.tutorial-lesson-title');
+    this.tutorialObjectiveEl = panel.querySelector('.tutorial-objective');
+    this.tutorialHintEl = panel.querySelector('.tutorial-hint');
+    this.tutorialFeedbackEl = panel.querySelector('.tutorial-feedback');
+
+    return panel;
+  }
+
+  /**
+   * Show tutorial selection modal
+   */
+  private showTutorialModal(): void {
+    if (this.tutorialModal) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal tutorial-modal';
+
+    const title = document.createElement('h2');
+    title.textContent = 'Choose a Lesson';
+    modal.appendChild(title);
+
+    const list = document.createElement('div');
+    list.className = 'tutorial-lesson-list';
+
+    this.tutorialManager.getLessons().forEach(lesson => {
+      const card = document.createElement('div');
+      card.className = 'tutorial-lesson-card';
+
+      card.innerHTML = `
+        <div class="tutorial-lesson-title">${lesson.title}</div>
+        <div class="tutorial-lesson-desc">${lesson.description}</div>
+        <div class="tutorial-lesson-meta">
+          <span>${lesson.category}</span>
+          <span>${lesson.stages.length} step${lesson.stages.length > 1 ? 's' : ''}</span>
+        </div>
+      `;
+
+      const startBtn = document.createElement('button');
+      startBtn.className = 'button-primary button-small';
+      startBtn.textContent = 'Start Lesson';
+      startBtn.onclick = () => {
+        this.closeTutorialModal();
+        this.startTutorial(lesson.id);
+      };
+      card.appendChild(startBtn);
+
+      list.appendChild(card);
+    });
+
+    modal.appendChild(list);
+    overlay.appendChild(modal);
+    overlay.onclick = (event) => {
+      if (event.target === overlay) {
+        this.closeTutorialModal();
+      }
+    };
+
+    document.body.appendChild(overlay);
+    this.tutorialModal = overlay;
+  }
+
+  /**
+   * Close tutorial selection modal
+   */
+  private closeTutorialModal(): void {
+    if (this.tutorialModal) {
+      document.body.removeChild(this.tutorialModal);
+      this.tutorialModal = null;
+    }
+  }
+
+  /**
+   * Start a tutorial lesson
+   */
+  private startTutorial(lessonId: string): void {
+    const stage = this.tutorialManager.startLesson(lessonId);
+    if (!stage) return;
+
+    this.tutorialActive = true;
+    this.renderer.clearTutorialHints();
+
+    if (this.gameModeSection) {
+      this.gameModeSection.style.display = 'none';
+    }
+
+    if (this.twoPlayerBtn && this.vsAiBtn) {
+      this.setGameMode(GameMode.TWO_PLAYER, this.twoPlayerBtn, this.vsAiBtn);
+    } else {
+      this.gameMode = GameMode.TWO_PLAYER;
+      this.aiPlayer = null;
+    }
+
+    this.applyTutorialStage(stage);
+    this.updateTutorialPanel(stage, '');
+    if (this.tutorialPanel) this.tutorialPanel.style.display = 'block';
+  }
+
+  /**
+   * Stop tutorial mode
+   */
+  private stopTutorial(): void {
+    this.tutorialActive = false;
+    this.tutorialManager.reset();
+    this.renderer.clearTutorialHints();
+    if (this.tutorialPanel) this.tutorialPanel.style.display = 'none';
+
+    if (this.gameModeSection) {
+      this.gameModeSection.style.display = '';
+    }
+
+    this.game.reset();
+    this.renderer.renderBoard(this.game.getBoard());
+    this.renderer.clearHighlights();
+    this.interaction.reset();
+    this.updateUI();
+  }
+
+  /**
+   * Apply tutorial stage setup to the board
+   */
+  private applyTutorialStage(stage: LessonStage): void {
+    if (!stage.setup) return;
+
+    const setup = this.tutorialManager.getStageSetup(stage);
+    if (!setup) {
+      this.game.reset();
+    } else {
+      this.game.setCustomState({
+        board: setup.board,
+        currentPlayer: setup.currentPlayer,
+        castlingRights: setup.castlingRights,
+        enPassantTarget: setup.enPassantTarget
+      });
+    }
+
+    this.renderer.renderBoard(this.game.getBoard());
+    this.renderer.clearHighlights();
+    this.interaction.reset();
+    this.updateUI();
+  }
+
+  /**
+   * Update tutorial panel content
+   */
+  private updateTutorialPanel(stage: LessonStage | null, feedback: string, isError: boolean = false): void {
+    const lesson = this.tutorialManager.getCurrentLesson();
+    const progress = this.tutorialManager.getProgress();
+
+    if (this.tutorialLessonTitleEl && lesson && progress) {
+      this.tutorialLessonTitleEl.textContent = `${lesson.title} (Step ${progress.stageNumber}/${progress.totalStages})`;
+    }
+    if (this.tutorialObjectiveEl) {
+      this.tutorialObjectiveEl.textContent = stage ? `Goal: ${stage.objective}` : '';
+    }
+    if (this.tutorialHintEl) {
+      this.tutorialHintEl.textContent = stage ? `Hint: ${stage.hints[0]}` : '';
+    }
+    if (this.tutorialFeedbackEl) {
+      this.tutorialFeedbackEl.textContent = feedback;
+      this.tutorialFeedbackEl.className = isError
+        ? 'tutorial-feedback error'
+        : 'tutorial-feedback success';
+    }
+  }
+
+  /**
+   * Handle hint request
+   */
+  private handleHint(): void {
+    if (!this.tutorialActive) return;
+    const hint = this.tutorialManager.getHint();
+    if (!hint) return;
+
+    if (this.tutorialHintEl) {
+      this.tutorialHintEl.textContent = `Hint: ${hint.text}`;
+    }
+
+    this.renderer.clearTutorialHints();
+    if (hint.suggestedMove) {
+      const fromPos = fromAlgebraic(hint.suggestedMove.from);
+      const toPos = fromAlgebraic(hint.suggestedMove.to);
+      this.renderer.highlightSquares([fromPos, toPos], 'tutorial-hint');
+    }
+  }
+
+  /**
+   * Show tutorial completion modal
+   */
+  private showTutorialCompletionModal(): void {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    const title = document.createElement('h2');
+    title.textContent = '🎉 Lesson Complete!';
+    modal.appendChild(title);
+
+    const message = document.createElement('p');
+    message.textContent = 'Great job! You finished this lesson.';
+    modal.appendChild(message);
+
+    const buttonGroup = document.createElement('div');
+    buttonGroup.className = 'button-group';
+
+    const nextLessonId = this.tutorialManager.getCurrentLesson()
+      ? this.tutorialManager.getNextLessonId(this.tutorialManager.getCurrentLesson()!.id)
+      : null;
+
+    if (nextLessonId) {
+      const nextButton = document.createElement('button');
+      nextButton.className = 'button-primary';
+      nextButton.textContent = 'Next Lesson';
+      nextButton.onclick = () => {
+        document.body.removeChild(overlay);
+        this.startTutorial(nextLessonId);
+      };
+      buttonGroup.appendChild(nextButton);
+    }
+
+    const lessonListButton = document.createElement('button');
+    lessonListButton.className = 'button-secondary';
+    lessonListButton.textContent = 'Back to Lessons';
+    lessonListButton.onclick = () => {
+      document.body.removeChild(overlay);
+      this.showTutorialModal();
+    };
+    buttonGroup.appendChild(lessonListButton);
+
+    const doneButton = document.createElement('button');
+    doneButton.className = 'button-secondary';
+    doneButton.textContent = 'Exit Tutorial';
+    doneButton.onclick = () => {
+      document.body.removeChild(overlay);
+      this.stopTutorial();
+    };
+    buttonGroup.appendChild(doneButton);
+
+    modal.appendChild(buttonGroup);
+    overlay.appendChild(modal);
+
+    overlay.onclick = (event) => {
+      if (event.target === overlay) {
+        document.body.removeChild(overlay);
+        this.stopTutorial();
+      }
+    };
+
+    document.body.appendChild(overlay);
+  }
+
+  /**
    * Create controls panel
    */
   private createControlsPanel(): HTMLElement {
@@ -294,6 +697,10 @@ export class GameScreen {
     // Move history section
     const moveHistory = this.createMoveHistory();
     panel.appendChild(moveHistory);
+
+    // Tutorial panel (hidden until active)
+    this.tutorialPanel = this.createTutorialPanel();
+    panel.appendChild(this.tutorialPanel);
     
     return panel;
   }
@@ -324,6 +731,9 @@ export class GameScreen {
     vsAiBtn.className = 'button-primary';
     vsAiBtn.onclick = () => this.setGameMode(GameMode.VS_AI, vsAiBtn, twoPlayerBtn);
     modeButtons.appendChild(vsAiBtn);
+
+    this.twoPlayerBtn = twoPlayerBtn;
+    this.vsAiBtn = vsAiBtn;
     
     section.appendChild(modeButtons);
     
@@ -377,7 +787,10 @@ export class GameScreen {
     const difficultySection = this.gameModeSection.querySelector('.difficulty-section') as HTMLElement;
     if (mode === GameMode.VS_AI) {
       difficultySection.style.display = 'block';
-      this.setAIDifficulty(AIDifficulty.EASY); // Default to easy
+      // Default to easy - difficulty can be adjusted via buttons
+      if (!this.aiPlayer) {
+        this.setAIDifficulty(AIDifficulty.EASY); // Default to easy
+      }
     } else {
       difficultySection.style.display = 'none';
       this.aiPlayer = null;
@@ -614,7 +1027,41 @@ export class GameScreen {
   /**
    * Handle move completion
    */
-  private async onMoveComplete(): Promise<void> {
+  private async onMoveComplete(from: Position, to: Position): Promise<void> {
+    if (this.tutorialActive) {
+      this.renderer.clearTutorialHints();
+      const result = this.tutorialManager.validateMove(from, to);
+
+      if (!result.correct) {
+        this.game.undo();
+        this.renderer.renderBoard(this.game.getBoard());
+        this.renderer.clearHighlights();
+        this.updateTutorialPanel(this.tutorialManager.getCurrentStage(), result.message, true);
+        this.updateUI();
+        return;
+      }
+
+      this.updateTutorialPanel(this.tutorialManager.getCurrentStage(), result.message, false);
+
+      if (result.stageComplete && result.nextStage) {
+        this.applyTutorialStage(result.nextStage);
+        this.updateTutorialPanel(result.nextStage, '', false);
+      }
+
+      if (result.lessonComplete) {
+        const lesson = this.tutorialManager.getCurrentLesson();
+        if (lesson) {
+          await progressTracker.addCompletedLesson(lesson.id);
+        }
+        this.showTutorialCompletionModal();
+      }
+    }
+
+    const now = Date.now();
+    const moveTime = (now - this.lastMoveTime) / 1000;
+    this.moveTimes.push(moveTime);
+    this.lastMoveTime = now;
+
     this.updateUI();
     
     // Check if it's AI's turn
@@ -665,10 +1112,22 @@ export class GameScreen {
   /**
    * Handle new game
    */
-  private handleNewGame(): void {
+  private async handleNewGame(): Promise<void> {
+    if (this.tutorialActive) {
+      const exitTutorial = confirm('Exit the tutorial and start a new game?');
+      if (!exitTutorial) return;
+      this.stopTutorial();
+    }
+
     if (confirm('Start a new game? Current game will be lost.')) {
       this.game.reset();
       this.gameStartTime = Date.now(); // Reset game timer
+      this.moveTimes = [];
+      this.lastMoveTime = Date.now();
+      
+      // Suggest difficulty based on skill (Phase 5.7)
+      await this.suggestDifficulty();
+      
       this.renderer.renderBoard(this.game.getBoard());
       this.renderer.clearHighlights();
       this.interaction.reset();
@@ -713,8 +1172,8 @@ export class GameScreen {
    * Show game over modal
    */
   private async showGameOverModal(title: string, message: string): Promise<void> {
-    // Save game if user is logged in (Phase 5)
-    await this.saveGameResult(title);
+    // Save game and analyze if user is logged in (Phase 5)
+    const analysis = await this.saveGameResult(title);
     
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -729,6 +1188,21 @@ export class GameScreen {
     const modalMessage = document.createElement('p');
     modalMessage.textContent = message;
     modal.appendChild(modalMessage);
+
+    // Show skill update if available (Phase 5.5)
+    if (analysis) {
+      const analysisDiv = document.createElement('div');
+      analysisDiv.className = 'game-analysis-summary';
+      const change = analysis.ratingChange >= 0 ? `+${analysis.ratingChange}` : analysis.ratingChange;
+      analysisDiv.innerHTML = `
+        <h3>📊 Skill Update</h3>
+        <p>New Rating: <strong>${analysis.newRating}</strong> (${change})</p>
+        <div class="analysis-stats">
+          <div class="stat"><strong>Level:</strong> ${analysis.level}</div>
+        </div>
+      `;
+      modal.appendChild(analysisDiv);
+    }
     
     const buttonGroup = document.createElement('div');
     buttonGroup.className = 'button-group';
@@ -775,7 +1249,7 @@ export class GameScreen {
   /**
    * Save game result (Phase 5)
    */
-  private async saveGameResult(_gameOverTitle: string): Promise<void> {
+  private async saveGameResult(_gameOverTitle: string): Promise<any> {
     const user = userManager.getCurrentUser();
     if (!user) {
       console.log('No user logged in, game not saved');
@@ -830,10 +1304,111 @@ export class GameScreen {
         this.gameMode === GameMode.VS_AI ? 'vs-ai' : 'two-player',
         this.gameMode === GameMode.VS_AI ? this.currentDifficulty : undefined
       );
+
+      // Analyze game and update skill profile (Phase 5.5, 5.6)
+      const analysis = await this.analyzeAndUpdateSkills(result);
       
-      console.log('✅ Game saved and progress updated');
+      console.log('✅ Game saved, progress updated, and skills analyzed');
+      return analysis;
     } catch (error) {
       console.error('Failed to save game:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Analyze game and update skill profile (Phase 5.5, 5.6)
+   */
+  private async analyzeAndUpdateSkills(result: 'win' | 'loss' | 'draw'): Promise<any> {
+    const user = userManager.getCurrentUser();
+    if (!user) return null;
+
+    try {
+      // Load or create skill profile
+      const rawProfile = await storageManager.get<any>('skills', user.id);
+      let skillProfile: any = rawProfile || SkillEngine.createInitialProfile(user.id);
+      
+      // Calculate rating change
+      const ratingChange = SkillEngine.calculateRatingChange(
+        skillProfile.rating,
+        this.gameMode === GameMode.VS_AI ? this.currentDifficulty : 'player',
+        result
+      );
+
+      // Update rating
+      skillProfile.rating = ratingChange.newRating;
+      skillProfile.level = SkillEngine.getSkillLevel(skillProfile.rating);
+      skillProfile.gamesPlayed++;
+      skillProfile.lastUpdated = Date.now();
+
+      // Add to rating history
+      if (!skillProfile.ratingHistory) skillProfile.ratingHistory = [];
+      skillProfile.ratingHistory.push({
+        timestamp: Date.now(),
+        rating: skillProfile.rating,
+        change: ratingChange.change,
+        opponent: this.gameMode === GameMode.VS_AI 
+          ? `AI-${this.currentDifficulty.charAt(0).toUpperCase() + this.currentDifficulty.slice(1)}`
+          : 'Player'
+      });
+
+      // Keep only last 20 rating history entries
+      if (skillProfile.ratingHistory.length > 20) {
+        skillProfile.ratingHistory = skillProfile.ratingHistory.slice(-20);
+      }
+
+      // Note: Full game analysis (Phase 5.6) requires board state tracking throughout the game
+      // This will be implemented when we add board state history to the game engine
+
+      // Update adaptive difficulty (Phase 5.7)
+      const recentResults = skillProfile.ratingHistory.slice(-5).map((entry: any) => 
+        entry.change > 0 ? 1 : (entry.change === 0 ? 0.5 : 0)
+      );
+      skillProfile.adaptiveDifficulty = SkillEngine.getAdaptiveDifficulty(
+        skillProfile.rating,
+        recentResults
+      );
+
+      // Save updated skill profile
+      await storageManager.save('skills', skillProfile);
+
+      console.log(`📊 Skill profile updated: Rating ${skillProfile.rating} (${ratingChange.change >= 0 ? '+' : ''}${ratingChange.change})`);
+      
+      // Return rating change info
+      return {
+        ratingChange: ratingChange.change,
+        newRating: skillProfile.rating,
+        level: skillProfile.level
+      };
+    } catch (error) {
+      console.error('Failed to analyze game:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Suggest difficulty based on player's skill (Phase 5.7)
+   */
+  private async suggestDifficulty(): Promise<void> {
+    const user = userManager.getCurrentUser();
+    if (!user || this.gameMode !== GameMode.VS_AI) return;
+
+    try {
+      const rawProfile = await storageManager.get<any>('skills', user.id);
+      const skillProfile: any = rawProfile;
+      if (!skillProfile || skillProfile.gamesPlayed < 3) return;
+
+      const suggested = SkillEngine.suggestAIDifficulty(skillProfile.rating);
+      
+      if (suggested !== this.currentDifficulty) {
+        const message = `Based on your skill level (${skillProfile.rating}), we recommend trying ${suggested.toUpperCase()} difficulty. Would you like to switch?`;
+        
+        if (confirm(message)) {
+          this.setAIDifficulty(suggested as AIDifficulty);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to suggest difficulty:', error);
     }
   }
 
@@ -841,6 +1416,8 @@ export class GameScreen {
    * Destroy and clean up
    */
   destroy(): void {
+    this.closeTutorialModal();
+    this.closeProfileModal();
     this.renderer.destroy();
     this.themeSelector.destroy();
     this.container.innerHTML = '';

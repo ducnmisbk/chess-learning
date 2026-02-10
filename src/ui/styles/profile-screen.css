@@ -1,0 +1,493 @@
+/**
+ * Profile Screen Styles
+ * 
+ * Styling for the user profile view including rating, skills, and statistics
+ */
+
+/* Profile Screen Container */
+.profile-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 15%, #fff4d6 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, #d9f7ff 0%, transparent 35%),
+    linear-gradient(135deg, #f8f9ff, #fff8f0);
+  padding: var(--spacing-lg);
+}
+
+/* Profile modal layout */
+.profile-modal-overlay {
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-modal {
+  max-width: 1000px;
+  width: min(96vw, 1000px);
+  max-height: 90vh;
+  padding: 0;
+  text-align: left;
+  overflow: hidden;
+}
+
+.profile-modal-content {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.profile-modal .profile-screen {
+  min-height: unset;
+  padding: var(--spacing-lg);
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+}
+
+.profile-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #333;
+  flex: 1;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e0e0e0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.back-button:hover {
+  background: white;
+  border-color: #667eea;
+  transform: translateX(-4px);
+}
+
+/* Profile Content */
+.profile-content {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Profile Cards */
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.profile-card h3 {
+  font-size: 1.4rem;
+  margin: 0 0 var(--spacing-md) 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.profile-card h4 {
+  font-size: 1.1rem;
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  color: #666;
+}
+
+/* User Info Card */
+.user-info-card {
+  grid-column: span 1;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea15, #764ba215);
+  padding: var(--spacing-md);
+  max-width: 420px;
+  justify-self: center;
+}
+
+.user-avatar-huge {
+  font-size: 4.2rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.user-info-card .user-name {
+  font-size: 1.6rem;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: #333;
+}
+
+.skill-badge {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.games-count {
+  color: #666;
+  font-size: var(--font-size-md);
+}
+
+/* Statistics Card */
+.statistics-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+.statistics-card h3 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+/* Rating Card */
+.rating-card {
+  grid-column: span 1;
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.current-rating {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.rating-level {
+  font-size: 1.2rem;
+  color: #666;
+  text-transform: capitalize;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: #f5f5f5;
+  border-radius: var(--border-radius);
+}
+
+/* Tier Progress */
+.tier-progress {
+  margin-top: var(--spacing-lg);
+}
+
+.tier-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: #666;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 12px;
+  transition: width 0.6s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: #888;
+  font-size: var(--font-size-sm);
+}
+
+/* Rating History Mini */
+.rating-history-mini {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 2px solid #f0f0f0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.history-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: #f8f8f8;
+  border-radius: var(--border-radius);
+}
+
+.history-change {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.history-change.positive {
+  color: #4caf50;
+}
+
+.history-change.negative {
+  color: #f44336;
+}
+
+.history-rating {
+  font-weight: 600;
+  color: #333;
+}
+
+.history-opponent {
+  font-size: var(--font-size-sm);
+  color: #888;
+}
+
+/* Tactical Skills Card */
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.skill-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.skill-name {
+  font-weight: 600;
+  color: #333;
+  font-size: var(--font-size-md);
+}
+
+.skill-bar {
+  height: 16px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+.skill-value {
+  align-self: flex-end;
+  font-size: var(--font-size-sm);
+  color: #666;
+  font-weight: 600;
+}
+
+/* Phase Scores Card */
+.phases-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.phase-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.phase-icon {
+  font-size: 1.5rem;
+}
+
+.phase-name {
+  font-weight: 600;
+  color: #333;
+  font-size: var(--font-size-md);
+}
+
+.phase-score-bar {
+  height: 16px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.phase-score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2196f3, #03a9f4);
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+.phase-score-value {
+  align-self: flex-end;
+  font-size: var(--font-size-sm);
+  color: #666;
+  font-weight: 600;
+}
+
+/* Statistics Card */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: 0;
+}
+
+.stats-grid h4 {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #666;
+}
+
+.stat-item {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #f5f5f5, #fafafa);
+  border-radius: var(--border-radius);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: var(--spacing-sm);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: #666;
+  font-weight: 600;
+}
+
+/* AI Performance */
+.ai-performance {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ai-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.ai-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  background: #f8f8f8;
+  border-radius: var(--border-radius);
+}
+
+.ai-difficulty {
+  font-weight: 600;
+  color: #333;
+}
+
+.ai-record {
+  color: #666;
+  font-weight: 500;
+}
+
+/* Recent Games Card */
+.view-history-link {
+  text-align: center;
+  margin-top: var(--spacing-md);
+}
+
+.view-history-btn {
+  width: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+
+  .user-info-card {
+    grid-column: 1 / -1;
+    max-width: 100%;
+  }
+
+  .rating-card {
+    grid-column: 1 / -1;
+  }
+
+  .statistics-card {
+    grid-template-columns: 1fr;
+  }
+
+  .statistics-card h3 {
+    grid-column: auto;
+  }
+
+  .profile-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .user-avatar-huge {
+    font-size: 4rem;
+  }
+
+  .current-rating {
+    font-size: 3rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

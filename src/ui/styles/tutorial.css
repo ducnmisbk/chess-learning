@@ -1,0 +1,142 @@
+/* Tutorial UI Styles */
+
+.tutorial-panel {
+  background: linear-gradient(135deg, #fff7e6, #f0f7ff);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid #f7d7a8;
+  order: -1;
+  position: sticky;
+  top: var(--spacing-md);
+  z-index: 2;
+}
+
+.tutorial-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.tutorial-lesson-title {
+  font-size: var(--font-size-md);
+  color: #666;
+  margin-top: 2px;
+}
+
+.tutorial-objective {
+  background: #f0f7ff;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  color: #1a3d7c;
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.tutorial-hint {
+  background: #fff4d6;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  color: #7a5b00;
+  margin-bottom: var(--spacing-md);
+}
+
+.tutorial-feedback {
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+}
+
+.tutorial-feedback.success {
+  color: #2e7d32;
+}
+
+.tutorial-feedback.error {
+  color: #c62828;
+}
+
+.tutorial-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.tutorial-modal {
+  max-width: 900px;
+  width: min(94vw, 900px);
+  text-align: left;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8ff 100%);
+  border: 3px solid #dfe3ff;
+  border-radius: 20px;
+  padding: calc(var(--spacing-lg) * 1.2);
+  box-shadow: 0 18px 40px rgba(64, 80, 140, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.tutorial-modal h2 {
+  text-align: left;
+  font-size: 2rem;
+  color: #2f3a80;
+  margin-bottom: var(--spacing-md);
+}
+
+.tutorial-lesson-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.tutorial-lesson-card {
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-md);
+  border: 2px solid #e6e8ff;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  box-shadow: 0 6px 14px rgba(90, 110, 180, 0.12);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.tutorial-lesson-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(90, 110, 180, 0.18);
+}
+
+.tutorial-lesson-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.tutorial-lesson-desc {
+  color: #666;
+  font-size: var(--font-size-sm);
+}
+
+.tutorial-lesson-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: #777;
+}
+
+.tutorial-lesson-card .button-primary {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .tutorial-panel {
+    position: static;
+  }
+
+  .tutorial-lesson-list {
+    grid-template-columns: 1fr;
+  }
+
+  .tutorial-modal {
+    padding: var(--spacing-md);
+  }
+}

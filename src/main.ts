@@ -8,6 +8,8 @@ import './ui/styles/board.css';
 import './ui/styles/components.css';
 import './ui/styles/theme-selector.css';
 import './ui/styles/data-persistence.css'; // Phase 5
+import './ui/styles/profile-screen.css'; // Phase 5.8
+import './ui/styles/tutorial.css'; // Phase 7
 
 import { GameScreen } from './ui/components/game-screen';
 import { UserAccountScreen } from './ui/components/user-account-screen';
@@ -99,7 +101,7 @@ function showGameScreen(container: HTMLElement, user: User): void {
     console.log('✅ User logged out');
     showAccountScreen(container);
   });
-  
+
   gameScreen.initialize();
 
   console.log('─────────────────────────────────────────────');

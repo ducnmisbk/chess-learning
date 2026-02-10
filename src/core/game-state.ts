@@ -410,6 +410,35 @@ export class ChessGame {
   }
 
   /**
+   * Load a custom board state (used for tutorials)
+   */
+  setCustomState(params: {
+    board: Board;
+    currentPlayer: PieceColor;
+    castlingRights?: GameState['castlingRights'];
+    enPassantTarget?: GameState['enPassantTarget'];
+    halfMoveClock?: number;
+    fullMoveNumber?: number;
+  }): void {
+    this.state = {
+      board: cloneBoard(params.board),
+      currentPlayer: params.currentPlayer,
+      status: GameStatus.PLAYING,
+      castlingRights: params.castlingRights || {
+        whiteKingSide: false,
+        whiteQueenSide: false,
+        blackKingSide: false,
+        blackQueenSide: false
+      },
+      enPassantTarget: params.enPassantTarget || null,
+      halfMoveClock: params.halfMoveClock ?? 0,
+      fullMoveNumber: params.fullMoveNumber ?? 1
+    };
+    this.history.clear();
+    this.updateGameStatus();
+  }
+
+  /**
    * Clone current state
    */
   private cloneState(): GameState {

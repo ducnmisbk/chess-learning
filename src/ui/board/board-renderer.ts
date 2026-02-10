@@ -239,6 +239,17 @@ export class BoardRenderer {
   }
 
   /**
+   * Clear tutorial hint highlights
+   */
+  clearTutorialHints(): void {
+    for (let row = 0; row < BOARD_SIZE; row++) {
+      for (let col = 0; col < BOARD_SIZE; col++) {
+        this.squares[row][col].classList.remove('tutorial-hint');
+      }
+    }
+  }
+
+  /**
    * Highlight last move
    */
   highlightLastMove(from: Position, to: Position): void {
