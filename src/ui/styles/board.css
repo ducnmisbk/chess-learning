@@ -1,0 +1,176 @@
+/**
+ * Board Styles
+ */
+
+.game-container {
+  display: flex;
+  gap: var(--spacing-lg);
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Board wrapper */
+.board-wrapper {
+  flex-shrink: 0;
+}
+
+.board-container {
+  position: relative;
+  width: var(--board-size);
+  height: var(--board-size);
+  border: var(--border-width) solid #8b7355;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-dark-square);
+  overflow: hidden;
+}
+
+/* Chessboard grid */
+.chessboard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  user-select: none;
+}
+
+/* Individual square */
+.square {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+/* Square colors */
+.square.light {
+  background-color: var(--color-light-square);
+}
+
+.square.dark {
+  background-color: var(--color-dark-square);
+}
+
+/* Square states */
+.square.selected {
+  background-color: var(--color-selected) !important;
+  box-shadow: inset 0 0 0 3px rgba(20, 85, 30, 0.8);
+}
+
+.square.highlighted {
+  background-color: var(--color-highlight) !important;
+}
+
+.square.last-move {
+  background-color: var(--color-last-move) !important;
+}
+
+.square.in-check {
+  background-color: var(--color-check) !important;
+  animation: checkPulse 1s ease-in-out infinite;
+}
+
+@keyframes checkPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Legal move indicator */
+.square.legal-move::after {
+  content: '';
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background-color: var(--color-legal-move);
+  pointer-events: none;
+}
+
+.square.legal-move.has-piece::after {
+  width: 90%;
+  height: 90%;
+  background-color: transparent;
+  border: 4px solid var(--color-legal-move);
+}
+
+/* Piece image */
+.piece {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  pointer-events: none;
+  transition: transform var(--transition-fast);
+}
+
+.square:hover .piece {
+  transform: scale(1.05);
+}
+
+.square.selected .piece {
+  transform: scale(1.1);
+}
+
+/* Dragging state */
+.piece.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+/* Coordinates (a-h, 1-8) */
+.coordinate {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+.coordinate.file {
+  bottom: 2px;
+  right: 4px;
+}
+
+.coordinate.rank {
+  top: 2px;
+  left: 4px;
+}
+
+.square.light .coordinate {
+  color: var(--color-dark-square);
+}
+
+.square.dark .coordinate {
+  color: var(--color-light-square);
+}
+
+/* Board rotation (for black perspective) */
+.board-container.rotated {
+  transform: rotate(180deg);
+}
+
+.board-container.rotated .square {
+  transform: rotate(180deg);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .coordinate {
+    font-size: 10px;
+  }
+  
+  .piece {
+    width: 80%;
+    height: 80%;
+  }
+}
