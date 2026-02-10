@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Học cờ vua online cho trẻ em 5-10 tuổi - Chơi offline, vui nhộn và giáo dục">
+    <title>Chess Learning - Học Cờ Vua Vui</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/pieces/classic/white-pawn.png">
+</head>
+<body>
+    <div id="app">
+        <h1>🎮 Chess Learning</h1>
+        <p>Chào mừng bạn đến với ứng dụng học cờ vua!</p>
+        <div class="status">
+            <h2>✅ Docker Services Running</h2>
+            <ul>
+                <li>Frontend: Vite Dev Server</li>
+                <li>Assets: 72 chess pieces loaded</li>
+                <li>Storage: IndexedDB ready</li>
+            </ul>
+        </div>
+        <div class="next-steps">
+            <h3>📋 Next Steps:</h3>
+            <ol>
+                <li>Follow Phase 1 in IMPLEMENTATION_PLAN.md</li>
+                <li>Create src/ directory with game engine</li>
+                <li>Implement chess logic and UI</li>
+            </ol>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4ade80;
+            margin: 2rem 0 1rem;
+        }
+
+        h3 {
+            color: #fbbf24;
+            margin: 2rem 0 1rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .status, .next-steps {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            line-height: 2;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+
+            #app {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</body>
+</html>
