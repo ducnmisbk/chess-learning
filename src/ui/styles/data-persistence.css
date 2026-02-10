@@ -1,0 +1,478 @@
+/**
+ * Data Persistence Styles (Phase 5)
+ * 
+ * Styles for user accounts, game history, and statistics
+ */
+
+/* ========================================
+   User Account Screen
+   ======================================== */
+
+.account-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+}
+
+.welcome-back,
+.login-screen {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.welcome-back h1,
+.login-screen h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+/* User Profile */
+.user-profile {
+  margin: 2rem 0;
+}
+
+.user-avatar-large {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.user-profile h2 {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+/* User List */
+.existing-users {
+  margin-bottom: 2rem;
+}
+
+.user-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.user-card {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+
+.user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-avatar-small {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Divider */
+.divider {
+  margin: 2rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* Create Account Form */
+.create-account {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.form-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Avatar Selector */
+.avatar-selector {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.avatar-option {
+  font-size: 2rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-option:hover {
+  transform: scale(1.1);
+  border-color: var(--primary-color);
+}
+
+.avatar-option.selected {
+  border-color: var(--primary-color);
+  background: var(--primary-color-light);
+}
+
+/* Error Message */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  min-height: 20px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.error-message.visible {
+  opacity: 1;
+}
+
+/* Guest Mode */
+.guest-mode {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* ========================================
+   Game History Viewer
+   ======================================== */
+
+.game-history {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.history-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.game-count {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.game-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border-left: 4px solid transparent;
+  transition: transform 0.2s;
+}
+
+.game-card:hover {
+  transform: translateX(4px);
+}
+
+.game-card.win {
+  border-left-color: var(--success-color);
+}
+
+.game-card.loss {
+  border-left-color: var(--error-color);
+}
+
+.game-card.draw {
+  border-left-color: var(--warning-color);
+}
+
+.game-result-icon {
+  font-size: 2rem;
+}
+
+.game-details {
+  flex: 1;
+}
+
+.game-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-mode {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 0.2rem 0.5rem;
+  background: var(--bg-primary);
+  border-radius: 4px;
+}
+
+.game-info {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.game-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+}
+
+/* ========================================
+   Statistics Display
+   ======================================== */
+
+.statistics-display {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.stat-section h3 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  text-align: center;
+  border-top: 4px solid var(--primary-color);
+}
+
+.stat-card.win {
+  border-top-color: var(--success-color);
+}
+
+.stat-card.loss {
+  border-top-color: var(--error-color);
+}
+
+.stat-card.draw {
+  border-top-color: var(--warning-color);
+}
+
+.stat-card.streak {
+  border-top-color: #ff6b35;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Progress Bars */
+.win-rate {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar.small {
+  height: 16px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success-color), #4ade80);
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.progress-label.small {
+  font-size: 0.85rem;
+}
+
+/* AI Stats */
+.ai-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-difficulty {
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.difficulty-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.win-loss {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.no-games {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+  .avatar-selector {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stat-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .user-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .game-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .game-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

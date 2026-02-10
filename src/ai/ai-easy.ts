@@ -5,8 +5,8 @@
  * (losing queen or rook without compensation)
  */
 
-import type { Move, PieceColor } from '../core/types';
-import { PieceType } from '../core/types';
+import type { Move } from '../core/types';
+import { PieceType, PieceColor } from '../core/types';
 import type { ChessGame } from '../core/game-state';
 import { AIDifficulty, type AIPlayer } from './ai-interface';
 import { PIECE_VALUES } from './evaluator';
@@ -26,7 +26,6 @@ export class AIEasy implements AIPlayer {
     // Add artificial delay to make AI feel less robotic
     await this.delay(this.thinkingDelay);
 
-    const state = game.getState();
     const allMoves = game.getAllLegalMoves(color);
 
     if (allMoves.length === 0) {
@@ -64,7 +63,6 @@ export class AIEasy implements AIPlayer {
    * A blunder is defined as losing a queen or rook without capturing anything
    */
   private isBlunder(game: ChessGame, move: Move): boolean {
-    const pieceValue = PIECE_VALUES[move.piece.type];
     const captureValue = move.capturedPiece ? PIECE_VALUES[move.capturedPiece.type] : 0;
 
     // Only consider queen and rook as "valuable pieces" for blunder detection
@@ -76,7 +74,7 @@ export class AIEasy implements AIPlayer {
     const testGame = game.clone();
     testGame.makeMove(move.from, move.to);
 
-    const opposingColor = move.piece.color === 'white' ? 'black' : 'white';
+    const opposingColor = move.piece.color === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
     const opponentMoves = testGame.getAllLegalMoves(opposingColor);
 
     // Check if opponent can capture our piece

@@ -5,7 +5,7 @@
  * Handles move execution, game status, and state transitions.
  */
 
-import type { Board, Piece, Position, Move, GameState, CastlingRights } from './types';
+import type { Board, Piece, Position, Move, GameState } from './types';
 import { PieceType, PieceColor, GameStatus } from './types';
 import { 
   initializeBoard, 
@@ -22,7 +22,7 @@ import {
   isCastlingMove,
   isEnPassantMove 
 } from './move-validator';
-import { MoveHistory, HistoryEntry } from './move-history';
+import { MoveHistory } from './move-history';
 import { toAlgebraic } from '../utils/coordinates';
 
 /**
@@ -429,7 +429,7 @@ export class ChessGame {
   /**
    * Get algebraic notation for a move
    */
-  private getMoveNotation(move: Move, stateBefore: GameState): string {
+  private getMoveNotation(move: Move, _stateBefore: GameState): string {
     const { from, to, piece } = move;
 
     // Castling

@@ -5,7 +5,7 @@
  * Higher scores favor White, lower scores favor Black.
  */
 
-import type { Board, Piece, PieceType, PieceColor, Position } from '../core/types';
+import type { Board, PieceType, Position } from '../core/types';
 import { PieceType as PT, PieceColor as PC } from '../core/types';
 
 /**

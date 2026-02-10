@@ -5,7 +5,7 @@
  * Each function returns an array of possible destination positions (not filtered for legality yet).
  */
 
-import type { Board, Piece, Position, PieceType } from './types';
+import type { Board, Piece, Position } from './types';
 import { PieceColor } from './types';
 import { PieceType as PT } from './types';
 import { getPieceAt } from './board';

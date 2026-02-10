@@ -13,6 +13,7 @@ import { AIEasy } from '../../ai/ai-easy';
 import { AIMedium } from '../../ai/ai-medium';
 import { AIHard } from '../../ai/ai-hard';
 import { themeManager, ThemeSelector } from '../themes';
+import { userManager, gameHistoryManager, progressTracker } from '../../data';
 
 /**
  * Game modes
@@ -37,6 +38,10 @@ export class GameScreen {
   private aiPlayer: AIPlayer | null = null;
   private aiColor: PieceColor = PieceColor.BLACK;
   private isAiThinking: boolean = false;
+  
+  // Game tracking (Phase 5)
+  private gameStartTime: number = Date.now();
+  private currentDifficulty: AIDifficulty = AIDifficulty.EASY;
   
   // UI Elements
   private gameModeSection!: HTMLElement;
@@ -235,6 +240,9 @@ export class GameScreen {
       activeBtn.classList.add('active');
       inactiveBtns.forEach(btn => btn.classList.remove('active'));
     }
+    
+    // Track difficulty for saving (Phase 5)
+    this.currentDifficulty = difficulty;
     
     // Create AI player
     switch (difficulty) {
@@ -495,6 +503,7 @@ export class GameScreen {
   private handleNewGame(): void {
     if (confirm('Start a new game? Current game will be lost.')) {
       this.game.reset();
+      this.gameStartTime = Date.now(); // Reset game timer
       this.renderer.renderBoard(this.game.getBoard());
       this.renderer.clearHighlights();
       this.interaction.reset();
@@ -538,7 +547,10 @@ export class GameScreen {
   /**
    * Show game over modal
    */
-  private showGameOverModal(title: string, message: string): void {
+  private async showGameOverModal(title: string, message: string): Promise<void> {
+    // Save game if user is logged in (Phase 5)
+    await this.saveGameResult(title);
+    
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     
@@ -593,6 +605,71 @@ export class GameScreen {
     }
     
     console.log('Theme changed:', themeManager.getCurrentTheme().name);
+  }
+
+  /**
+   * Save game result (Phase 5)
+   */
+  private async saveGameResult(_gameOverTitle: string): Promise<void> {
+    const user = userManager.getCurrentUser();
+    if (!user) {
+      console.log('No user logged in, game not saved');
+      return;
+    }
+
+    try {
+      // Get game moves
+      const history = this.game.getHistory();
+      const moves = history.toAlgebraicNotation();
+      
+      // Determine result
+      const status = this.game.getStatus();
+      const currentPlayer = this.game.getCurrentPlayer();
+      const playerColor = this.gameMode === GameMode.VS_AI 
+        ? (this.aiColor === PieceColor.WHITE ? 'black' : 'white')
+        : 'white';
+      
+      let result: 'win' | 'loss' | 'draw';
+      let winner: 'white' | 'black' | 'draw';
+      
+      if (status === GameStatus.CHECKMATE) {
+        const winnerColor: 'white' | 'black' = currentPlayer === PieceColor.WHITE ? 'black' : 'white';
+        winner = winnerColor;
+        
+        if (this.gameMode === GameMode.VS_AI) {
+          result = winnerColor === playerColor ? 'win' : 'loss';
+        } else {
+          result = 'win'; // For 2-player, we just track it as a win
+        }
+      } else {
+        result = 'draw';
+        winner = 'draw';
+      }
+      
+      // Save game
+      await gameHistoryManager.saveGame(
+        this.gameMode === GameMode.VS_AI ? 'vs-ai' : 'two-player',
+        moves,
+        result,
+        winner,
+        this.gameStartTime,
+        {
+          difficulty: this.gameMode === GameMode.VS_AI ? this.currentDifficulty : undefined,
+          playerColor: this.gameMode === GameMode.VS_AI ? playerColor : undefined
+        }
+      );
+      
+      // Update progress
+      await progressTracker.updateAfterGame(
+        result,
+        this.gameMode === GameMode.VS_AI ? 'vs-ai' : 'two-player',
+        this.gameMode === GameMode.VS_AI ? this.currentDifficulty : undefined
+      );
+      
+      console.log('✅ Game saved and progress updated');
+    } catch (error) {
+      console.error('Failed to save game:', error);
+    }
   }
 
   /**

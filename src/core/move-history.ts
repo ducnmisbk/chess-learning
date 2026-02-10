@@ -145,4 +145,11 @@ export class MoveHistory {
     
     return displayList;
   }
+
+  /**
+   * Get moves in algebraic notation as array (for saving games)
+   */
+  toAlgebraicNotation(): string[] {
+    return this.getAllMoves().map(entry => entry.notation);
+  }
 }

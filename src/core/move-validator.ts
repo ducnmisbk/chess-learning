@@ -8,11 +8,11 @@
  * - Legal move filtering
  */
 
-import type { Board, Piece, Position, Move, CastlingRights, EnPassantTarget } from './types';
+import type { Board, Piece, Position, CastlingRights, EnPassantTarget } from './types';
 import { PieceType, PieceColor, GameStatus } from './types';
 import { getPieceAt, setPieceAt, cloneBoard, findKing, findPieces } from './board';
 import { getPseudoLegalMoves, canAttackSquare } from './pieces';
-import { isValidPosition, positionsEqual } from '../utils/coordinates';
+import { positionsEqual } from '../utils/coordinates';
 
 /**
  * Get all legal moves for a piece at a position
@@ -88,7 +88,7 @@ function wouldBeInCheckAfterMove(
  */
 function getCastlingMoves(
   board: Board,
-  kingPos: Position,
+  _kingPos: Position,
   king: Piece,
   castlingRights: CastlingRights
 ): Position[] {
@@ -290,7 +290,7 @@ function hasAnyLegalMoves(
 /**
  * Check if a move is a pawn promotion
  */
-export function isPromotion(from: Position, to: Position, piece: Piece): boolean {
+export function isPromotion(_from: Position, to: Position, piece: Piece): boolean {
   if (piece.type !== PieceType.PAWN) return false;
 
   const promotionRank = piece.color === PieceColor.WHITE ? 0 : 7;
@@ -311,7 +311,7 @@ export function isCastlingMove(from: Position, to: Position, piece: Piece): bool
  * Check if a move is en passant
  */
 export function isEnPassantMove(
-  from: Position,
+  _from: Position,
   to: Position,
   piece: Piece,
   enPassantTarget: EnPassantTarget

@@ -5,9 +5,9 @@
  * Evaluation: Material + position tables + king safety + center control
  */
 
-import type { Move, PieceColor } from '../core/types';
+import type { Move } from '../core/types';
+import { PieceColor, GameStatus } from '../core/types';
 import type { ChessGame } from '../core/game-state';
-import { GameStatus } from '../core/types';
 import { AIDifficulty, type AIPlayer, type AIMoveResult } from './ai-interface';
 import { evaluateBoard, PIECE_VALUES } from './evaluator';
 
@@ -69,7 +69,7 @@ export class AIHard implements AIPlayer {
       };
     }
 
-    const currentColor: PieceColor = maximizing ? 'white' : 'black';
+    const currentColor: PieceColor = maximizing ? PieceColor.WHITE : PieceColor.BLACK;
     const moves = game.getAllLegalMoves(currentColor);
 
     if (moves.length === 0) {

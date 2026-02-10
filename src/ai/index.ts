@@ -4,7 +4,7 @@
  * Central export file for all AI-related modules
  */
 
-export { AIPlayer, AIDifficulty, AIMoveResult } from './ai-interface';
+export type { AIPlayer, AIDifficulty, AIMoveResult } from './ai-interface';
 export { AIEasy } from './ai-easy';
 export { AIMedium } from './ai-medium';
 export { AIHard } from './ai-hard';
