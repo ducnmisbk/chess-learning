@@ -6,7 +6,7 @@
 
 import type { Theme, ThemeConfig, PieceColors } from './theme-types';
 import { ThemeId } from './theme-types';
-import themesData from '../../../assets/themes.json';
+import themesData from '../../../public/assets/themes.json';
 
 const STORAGE_KEY = 'chess-theme';
 const PIECE_COLOR_STORAGE_KEY = 'chess-theme-piece-colors';
