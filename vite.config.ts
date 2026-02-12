@@ -10,10 +10,10 @@ export default defineConfig({
     }
   },
   server: {
-    host: true, // For Docker
+    host: true, // Allow Docker container access
     port: 5173,
     watch: {
-      usePolling: true // For Docker file watching
+      usePolling: true // Required for file watching in Docker volumes
     }
   },
   build: {

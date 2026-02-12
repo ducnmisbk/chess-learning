@@ -134,51 +134,69 @@ Total: 73 image files + 12 emoji avatars ready
 
 ---
 
-## 🚀 Next Steps - START DEVELOPMENT
+## 🚀 Getting Started
 
-### Step 1: Initialize Project (5 minutes)
+### Quick Start (Local Development)
 
 ```bash
-cd /Users/macbook/Desktop/Side-Projects/chess-learning
-
-# Create Vite + TypeScript project
-npm create vite@latest . -- --template vanilla-ts
+# Clone repository
+git clone https://github.com/ducnmisbk/chess-learning.git
+cd chess-learning
 
 # Install dependencies
 npm install
 
-# Verify it works
+# Run development server
 npm run dev
+# → http://localhost:5173
 ```
 
-### Step 2: Create Source Structure (10 minutes)
+### Docker Development Environment (Optional)
 
 ```bash
-# Create directories
-mkdir -p src/{core,ai,tutorial,ui,data,state,services,utils}
-mkdir -p src/ui/{board,components,themes}
-mkdir -p src/tutorial/lessons
+# Start dev server with hot reload in Docker
+docker-compose up
 
-# Create initial type definitions
-touch src/core/types.ts
-touch src/core/board.ts
-touch src/core/pieces.ts
-touch src/core/move-validator.ts
+# Visit http://localhost:5173
 ```
 
-### Step 3: Start Phase 1 - Core Engine
+### Build for Production
 
-Follow: [IMPLEMENTATION_PLAN.md - Phase 1](IMPLEMENTATION_PLAN.md#phase-1-core-game-engine-week-1-2)
+```bash
+# Build optimized static bundle
+npm run build
 
-**Milestone 1.1**: Board Representation
-1. Define `Board` type (8×8 array)
-2. Define `Piece` interface
-3. Implement `initializeBoard()` function
-4. Test in console
+# Preview production build locally
+npm run preview
+```
 
 ---
 
-## 💎 Project Highlights
+## 🌐 Deployment
+
+This app is **100% client-side** and requires only static file hosting.
+
+### Recommended Options (Free):
+
+**1. GitHub Pages** (Current setup ✅)
+- Auto-deploys on push to `main`
+- Live at: `https://ducnmisbk.github.io/chess-learning/`
+
+**2. Vercel** (Alternative)
+```bash
+npm run deploy:vercel
+```
+
+**3. Netlify** (Alternative)
+```bash
+npm run deploy:netlify
+```
+
+See [HOSTING_GUIDE.md](HOSTING_GUIDE.md) for detailed deployment instructions.
+
+---
+
+## � Project Highlights
 
 ### What Makes This Special?
 
@@ -202,14 +220,34 @@ Follow: [IMPLEMENTATION_PLAN.md - Phase 1](IMPLEMENTATION_PLAN.md#phase-1-core-g
    - Encourage experimentation (unlimited undo)
 
 4. **📱 Offline-First**
-   - 100% local, no servers
+   - 100% client-side, no backend required
    - IndexedDB storage with LocalStorage fallback
-   - No internet required
+   - No internet required after initial load
    - Works in schools without wifi
 
 5. **🤖 Smart AI Companion**
    - 3 difficulty levels (Easy/Medium/Hard)
+   - Uses js-chess-engine for accurate chess logic
    - "ChessBuddy" mascot planned (owl recommended)
+   - Explains moves in kid-friendly way (planned)
+   - Celebrates progress (planned)
+
+6. **🎮 Complete User Experience**
+   - Seamless account flow (Account ↔ Game screen)
+   - Profile management in hamburger menu
+   - Guest mode for quick play
+   - Game history and statistics tracking
+   - Win streak motivation
+
+7. **🌐 Easy Deployment**
+   - Static files only (~2-5MB)
+   - Deploy anywhere: GitHub Pages, Vercel, Netlify
+   - No server setup required
+   - Free hosting options available
+
+---
+
+## 📦 Asset Loading Strategy
    - Explains moves in kid-friendly way (planned)
    - Celebrates progress (planned)
 

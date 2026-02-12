@@ -26,91 +26,20 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3000
-      - VITE_AI_API_URL=http://ai-api:3000
-    networks:
-      - chess-network
     stdin_open: true
     tty: true
     command: npm run dev -- --host
 
-  # ============================================
-  # AI Explanation API (Optional Service)
-  # ============================================
-  ai-api:
-    build:
-      context: ./services/ai-api
-      dockerfile: Dockerfile
-    container_name: chess-learning-ai-api
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./services/ai-api/src:/app/src
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - REDIS_URL=redis://redis:6379
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - LOG_LEVEL=debug
-    networks:
-      - chess-network
-    depends_on:
-      - redis
-    restart: unless-stopped
-
-  # ============================================
-  # Redis Cache (for AI API)
-  # ============================================
-  redis:
-    image: redis:7-alpine
-    container_name: chess-learning-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    networks:
-      - chess-network
-    command: redis-server --appendonly yes
-    restart: unless-stopped
-
-  # ============================================
-  # Production Build Test
-  # ============================================
-  nginx-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    container_name: chess-learning-nginx
-    ports:
-      - "8080:80"
-    networks:
-      - chess-network
-    profiles:
-      - production-test
-    restart: unless-stopped
-
-networks:
-  chess-network:
-    driver: bridge
-
-volumes:
-  redis-data:
-    driver: local
-
 # ============================================
 # Usage:
 # 
-# Development:
+# Development (with hot reload):
 #   docker-compose up
-#   -> Frontend: http://localhost:5173
-#   -> AI API: http://localhost:3000
+#   -> http://localhost:5173
 #
-# Production Test:
-#   docker-compose --profile production-test up nginx-prod
-#   -> http://localhost:8080
+# Stop:
+#   docker-compose down
 #
-# Cleanup:
-#   docker-compose down -v
+# Rebuild (after package.json changes):
+#   docker-compose up --build
 # ============================================
