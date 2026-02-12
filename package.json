@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
-    "test": "echo \"Tests will be added in Phase 1\" && exit 0"
+    "test": "echo \"Tests will be added in Phase 1\" && exit 0",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir=dist",
+    "deploy:gh": "gh-pages -d dist"
   },
   "dependencies": {
     "idb": "^8.0.0",
