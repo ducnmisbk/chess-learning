@@ -10,9 +10,7 @@ import type { Position } from '../../core/types';
 import { BoardRenderer } from '../board/board-renderer';
 import { InteractionHandler } from '../board/interaction-handler';
 import { AIPlayer, AIDifficulty } from '../../ai/ai-interface';
-import { AIEasy } from '../../ai/ai-easy';
-import { AIMedium } from '../../ai/ai-medium';
-import { AIHard } from '../../ai/ai-hard';
+import { AIEnginePlayer } from '../../ai/ai-engine-player';
 import { themeManager, ThemeSelector } from '../themes';
 import { ProfileScreen } from './profile-screen';
 import { lessons, TutorialManager, LessonStage } from '../../tutorial';
@@ -59,6 +57,7 @@ export class GameScreen {
   private onLogoutCallback?: () => void;
   private onProfileCallback?: () => void;
   private profileOverlay: HTMLElement | null = null;
+  private lastStatusLog: { status: GameStatus; player: PieceColor } | null = null;
   private tutorialManager: TutorialManager;
   private tutorialPanel: HTMLElement | null = null;
   private tutorialModal: HTMLElement | null = null;
@@ -506,6 +505,7 @@ export class GameScreen {
     if (!stage) return;
 
     this.tutorialActive = true;
+    this.updateNewGameButtonText();
     this.renderer.clearTutorialHints();
 
     if (this.gameModeSection) {
@@ -529,6 +529,7 @@ export class GameScreen {
    */
   private stopTutorial(): void {
     this.tutorialActive = false;
+    this.updateNewGameButtonText();
     this.tutorialManager.reset();
     this.renderer.clearTutorialHints();
     if (this.tutorialPanel) this.tutorialPanel.style.display = 'none';
@@ -822,20 +823,10 @@ export class GameScreen {
     // Track difficulty for saving (Phase 5)
     this.currentDifficulty = difficulty;
     
-    // Create AI player
-    switch (difficulty) {
-      case AIDifficulty.EASY:
-        this.aiPlayer = new AIEasy();
-        break;
-      case AIDifficulty.MEDIUM:
-        this.aiPlayer = new AIMedium();
-        break;
-      case AIDifficulty.HARD:
-        this.aiPlayer = new AIHard();
-        break;
-    }
+    // Create AI player using js-chess-engine
+    this.aiPlayer = new AIEnginePlayer(difficulty);
     
-    console.log(`AI difficulty set to: ${difficulty}`);
+    console.log(`AI difficulty set to: ${difficulty} (engine level: ${(this.aiPlayer as AIEnginePlayer).getEngineLevel()})`);
   }
 
   /**
@@ -956,6 +947,13 @@ export class GameScreen {
     const status = this.game.getStatus();
     const currentPlayer = this.game.getCurrentPlayer();
     const oppositePlayer = currentPlayer === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+
+    if (!this.lastStatusLog ||
+        this.lastStatusLog.status !== status ||
+        this.lastStatusLog.player !== currentPlayer) {
+      console.log(`Game status: ${status}, to move: ${currentPlayer}`);
+      this.lastStatusLog = { status, player: currentPlayer };
+    }
     
     this.gameStatusElement.className = 'game-status';
     
@@ -1022,6 +1020,18 @@ export class GameScreen {
   private updateButtons(): void {
     this.undoButton.disabled = !this.game.canUndo();
     this.redoButton.disabled = !this.game.canRedo();
+    this.updateNewGameButtonText();
+  }
+
+  /**
+   * Update new game button text based on mode
+   */
+  private updateNewGameButtonText(): void {
+    if (this.tutorialActive) {
+      this.newGameButton.textContent = '🔄 Restart Lesson';
+    } else {
+      this.newGameButton.textContent = '🔄 New Game';
+    }
   }
 
   /**
@@ -1065,10 +1075,12 @@ export class GameScreen {
     this.updateUI();
     
     // Check if it's AI's turn
+    const status = this.game.getStatus();
+    const isPlayable = status === GameStatus.PLAYING || status === GameStatus.CHECK;
     if (this.gameMode === GameMode.VS_AI && 
         this.aiPlayer && 
         this.game.getCurrentPlayer() === this.aiColor &&
-        this.game.getStatus() === GameStatus.PLAYING) {
+        isPlayable) {
       await this.makeAIMove();
     }
   }
@@ -1089,7 +1101,7 @@ export class GameScreen {
       const move = await this.aiPlayer.getBestMove(this.game, this.aiColor);
       
       if (move) {
-        // Execute AI move
+        // Execute AI move through game engine
         const success = this.game.makeMove(move.from, move.to, move.promotionPiece);
         
         if (success) {
@@ -1098,13 +1110,23 @@ export class GameScreen {
           this.renderer.highlightLastMove(move.from, move.to);
           
           console.log(`AI moved: ${JSON.stringify(move.from)} → ${JSON.stringify(move.to)}`);
+        } else {
+          // If our custom validator rejects a valid js-chess-engine move,
+          // log a warning - this indicates a bug in move-validator.ts
+          console.warn(
+            'AI move rejected by custom validator but was valid in js-chess-engine:',
+            JSON.stringify(move.from), '→', JSON.stringify(move.to)
+          );
         }
       }
     } catch (error) {
       console.error('AI move error:', error);
     } finally {
       this.isAiThinking = false;
-      this.interaction.setEnabled(this.game.getStatus() === GameStatus.PLAYING);
+      const currentStatus = this.game.getStatus();
+      this.interaction.setEnabled(
+        currentStatus === GameStatus.PLAYING || currentStatus === GameStatus.CHECK
+      );
       this.updateUI();
     }
   }
@@ -1114,11 +1136,16 @@ export class GameScreen {
    */
   private async handleNewGame(): Promise<void> {
     if (this.tutorialActive) {
-      const exitTutorial = confirm('Exit the tutorial and start a new game?');
-      if (!exitTutorial) return;
-      this.stopTutorial();
+      // In lesson mode: restart current lesson
+      const currentLesson = this.tutorialManager.getCurrentLesson();
+      if (currentLesson) {
+        this.game.reset();
+        this.startTutorial(currentLesson.id);
+        return;
+      }
     }
 
+    // Normal mode: confirm and start new game
     if (confirm('Start a new game? Current game will be lost.')) {
       this.game.reset();
       this.gameStartTime = Date.now(); // Reset game timer

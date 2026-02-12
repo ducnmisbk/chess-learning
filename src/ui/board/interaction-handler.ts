@@ -164,9 +164,9 @@ export class InteractionHandler {
       // Check for check
       const status = this.game.getStatus();
       if (status === GameStatus.CHECK || status === GameStatus.CHECKMATE) {
-        // Find opponent's king and highlight it
-        const opponentColor = this.game.getCurrentPlayer();
-        const kingPos = this.findKingPosition(opponentColor);
+        // Highlight the king that is in check (current player to move)
+        const checkedColor = this.game.getCurrentPlayer();
+        const kingPos = this.findKingPosition(checkedColor);
         if (kingPos) {
           this.renderer.highlightCheck(kingPos);
         }

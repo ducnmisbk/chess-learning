@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Dependencies
 # ============================================
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/root/.npm \
 # ============================================
 # Stage 2: Builder
 # ============================================
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -33,7 +33,7 @@ RUN npm run build || true
 # ============================================
 # Stage 3: Production Runtime
 # ============================================
-FROM node:20-alpine AS production
+FROM node:24-alpine AS production
 
 # Install dumb-init (proper signal handling)
 RUN apk add --no-cache dumb-init curl

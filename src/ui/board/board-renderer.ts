@@ -228,7 +228,7 @@ export class BoardRenderer {
    * Clear all highlights
    */
   clearHighlights(): void {
-    const highlightClasses = ['selected', 'legal-move', 'highlighted', 'last-move', 'has-piece'];
+    const highlightClasses = ['selected', 'legal-move', 'highlighted', 'last-move', 'has-piece', 'in-check'];
     
     for (let row = 0; row < BOARD_SIZE; row++) {
       for (let col = 0; col < BOARD_SIZE; col++) {

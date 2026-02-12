@@ -49,7 +49,7 @@ export class AIMedium implements AIPlayer {
     const state = game.getState();
 
     // Terminal conditions
-    if (depth === 0 || state.status !== GameStatus.PLAYING) {
+    if (depth === 0 || this.isTerminalStatus(state.status)) {
       return {
         move: null,
         evaluation: this.evaluatePosition(game),
@@ -148,6 +148,12 @@ export class AIMedium implements AIPlayer {
 
     // Use basic positional evaluation (material + center)
     return evaluateBoard(state.board, true);
+  }
+
+  private isTerminalStatus(status: GameStatus): boolean {
+    return status === GameStatus.CHECKMATE ||
+      status === GameStatus.STALEMATE ||
+      status === GameStatus.DRAW;
   }
 
   /**

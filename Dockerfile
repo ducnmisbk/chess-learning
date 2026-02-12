@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Dependencies (cached layer)
 # ============================================
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/root/.npm \
 # ============================================
 # Stage 2: Build
 # ============================================
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
