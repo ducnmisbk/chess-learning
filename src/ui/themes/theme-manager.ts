@@ -116,7 +116,8 @@ export class ThemeManager {
    */
   getPieceImagePath(color: 'white' | 'black', pieceType: string): string {
     const pieceColor = this.currentPieceColors[color];
-    return `${this.currentTheme.pieces}/${pieceColor}-${pieceType}.png`;
+    const basePath = import.meta.env.BASE_URL || '/';
+    return `${basePath}${this.currentTheme.pieces}/${pieceColor}-${pieceType}.png`;
   }
 
   /**

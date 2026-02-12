@@ -181,7 +181,8 @@ export class BoardRenderer {
       return this.themeManager.getPieceImagePath(piece.color, piece.type);
     }
     // Fallback to classic theme if no theme manager
-    return `/assets/pieces/classic/${piece.color}-${piece.type}.png`;
+    const basePath = import.meta.env.BASE_URL || '/';
+    return `${basePath}assets/pieces/classic/${piece.color}-${piece.type}.png`;
   }
 
   /**
